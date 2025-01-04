@@ -1,1 +1,2 @@
-# Symulator-Smart-Home-Protoko-y-Sieci-Web-
+Symulator Smart Home (Protokoły sieci Web)
+Amelia Kanabaj
