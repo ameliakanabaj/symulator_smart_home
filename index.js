@@ -13,6 +13,10 @@ app.get('/', (req, res) => {
   res.send('Witamy w Symulatorze Smart Home!');
 });
 
+app.get('/devices', (req, res) => {
+  res.json(devices);
+});
+
 app.get('/devices/search', (req, res) => {
   const { query } = req.query;
   if (!query) {
