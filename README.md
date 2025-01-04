@@ -1,0 +1,1 @@
+# Symulator-Smart-Home-Protoko-y-Sieci-Web-
