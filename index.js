@@ -1,4 +1,5 @@
 const express = require('express');
+const mqtt = require('mqtt');
 const app = express();
 const port = 3000;
 
@@ -87,4 +88,39 @@ app.post('/login', (req, res) => {
   } else {
     res.status(401).json({ message: 'Nieprawidłowa nazwa użytkownika lub hasło.' });
   }
+});
+
+const mqttClient = mqtt.connect('mqtt://localhost:1883');
+
+mqttClient.on('connect', () => {
+  console.log('Połączono z brokerem MQTT');
+  
+  mqttClient.subscribe('smarthome/devices', (err) => {
+    if (!err) {
+      console.log('Subskrybowano temat: smarthome/devices');
+    }
+  });
+});
+
+mqttClient.on('message', (topic, message) => {
+  console.log(`Odebrano wiadomość z tematu ${topic}: ${message.toString()}`);
+});
+
+mqttClient.on('message', (topic, message) => {
+  console.log(`Odebrano wiadomość z tematu ${topic}: ${message.toString()}`);
+});
+
+app.post('/mqtt/publish', (req, res) => {
+  const { topic, message } = req.body;
+
+  if (!topic || !message) {
+    return res.status(400).json({ message: 'Podaj temat i wiadomość.' });
+  }
+
+  mqttClient.publish(topic, message, (err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Nie udało się opublikować wiadomości.' });
+    }
+    res.json({ message: 'Wiadomość opublikowana!' });
+  });
 });
