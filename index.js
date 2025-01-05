@@ -1,5 +1,7 @@
 const express = require('express');
 const mqtt = require('mqtt');
+const http = require('http');
+const { Server } = require('socket.io');
 const app = express();
 const port = 3000;
 
@@ -123,4 +125,24 @@ app.post('/mqtt/publish', (req, res) => {
     }
     res.json({ message: 'Wiadomość opublikowana!' });
   });
+});
+
+const server = http.createServer(app);
+const io = new Server(server);
+
+io.on('connection', (socket) => {
+  console.log('Nowe połączenie WebSocket');
+  socket.on('device-update', (data) => {
+    console.log('Otrzymano dane:', data);
+    socket.broadcast.emit('device-update', data);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Rozłączono WebSocket');
+  });
+});
+
+const PORT = 3000;
+server.listen(PORT, () => {
+  console.log(`Serwer działa na porcie ${PORT}`);
 });
