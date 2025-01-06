@@ -2,8 +2,15 @@ const express = require('express');
 const mqtt = require('mqtt');
 const http = require('http');
 const { Server } = require('socket.io');
+const cors = require('cors');
 const app = express();
-const port = 3000;
+const HTTP_PORT = 3000;
+
+app.use(cors({
+  origin: 'http://127.0.0.1:5500', 
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
+}));
 
 app.use(express.json()); 
 
@@ -72,8 +79,8 @@ app.delete('/devices/:id', (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Serwer działa na http://localhost:${port}`);
+app.listen(HTTP_PORT, () => {
+  console.log(`Serwer działa na http://localhost:${HTTP_PORT}`);
 });
 
 const users = [
@@ -108,10 +115,6 @@ mqttClient.on('message', (topic, message) => {
   console.log(`Odebrano wiadomość z tematu ${topic}: ${message.toString()}`);
 });
 
-mqttClient.on('message', (topic, message) => {
-  console.log(`Odebrano wiadomość z tematu ${topic}: ${message.toString()}`);
-});
-
 app.post('/mqtt/publish', (req, res) => {
   const { topic, message } = req.body;
 
@@ -127,8 +130,13 @@ app.post('/mqtt/publish', (req, res) => {
   });
 });
 
-const server = http.createServer(app);
-const io = new Server(server);
+const wsServer = http.createServer(app);
+const io = new Server(wsServer, {
+  cors: {
+    origin: 'http://127.0.0.1:5500',
+    methods: ['GET', 'POST'],
+  }
+});
 
 io.on('connection', (socket) => {
   console.log('Nowe połączenie WebSocket');
@@ -142,7 +150,7 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = 3000;
-server.listen(PORT, () => {
-  console.log(`Serwer działa na porcie ${PORT}`);
+const WS_PORT = 3001;
+wsServer.listen(WS_PORT, () => {
+  console.log(`Serwer WebSocket działa na porcie ${WS_PORT}`);
 });
