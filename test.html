@@ -4,10 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart Home</title>
-  <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
   <script src="app.js" defer></script>
 </head>
 <body>
-  <h1>Witaj w Symulatorze Smart Home!</h1>
+  <h1>Symulator Smart Home</h1>
+
+  <h2>Lista urządzeń</h2>
+  <ul id="device-list">
+  </ul>
+
+  <h2>Dodaj urządzenie</h2>
+  <form id="add-device-form">
+    <label for="device-name">Nazwa urządzenia:</label>
+    <input type="text" id="device-name" required>
+    <label for="device-status">Status:</label>
+    <select id="device-status">
+      <option value="on">Włączone</option>
+      <option value="off">Wyłączone</option>
+    </select>
+    <button type="submit">Dodaj</button>
+  </form>
+
+  <h2>Zmień status urządzenia</h2>
+  <form id="update-device-form">
+    <label for="update-device-id">ID urządzenia:</label>
+    <input type="number" id="update-device-id" required>
+    <label for="update-device-status">Nowy status:</label>
+    <select id="update-device-status">
+      <option value="on">Włączone</option>
+      <option value="off">Wyłączone</option>
+    </select>
+    <button type="submit">Zmień</button>
+  </form>
 </body>
 </html>

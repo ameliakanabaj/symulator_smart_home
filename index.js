@@ -8,7 +8,7 @@ const HTTP_PORT = 3000;
 
 app.use(cors({
   origin: 'http://127.0.0.1:5500', 
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type'],
 }));
 
@@ -54,17 +54,24 @@ app.post('/devices', (req, res) => {
 });
 
 app.put('/devices/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const { name, status } = req.body;
-  const device = devices.find(d => d.id === id);
+  const { id } = req.params;
+  const { status } = req.body;
+  const device = devices.find(d => d.id === parseInt(id));
 
-  if (device) {
-    device.name = name || device.name;
-    device.status = status || device.status;
-    res.json(device);
-  } else {
-    res.status(404).json({ message: 'Urządzenie nie znalezione.' });
+  if (!device) {
+    return res.status(404).json({ message: 'Urządzenie nie znalezione.' });
   }
+
+  device.status = status;
+
+  // Publikowanie zmiany do MQTT
+  mqttClient.publish('smarthome/devices', JSON.stringify({
+    id: device.id,
+    name: device.name,
+    status: device.status,
+  }));
+
+  res.json(device);
 });
 
 app.delete('/devices/:id', (req, res) => {
@@ -112,8 +119,20 @@ mqttClient.on('connect', () => {
 });
 
 mqttClient.on('message', (topic, message) => {
-  console.log(`Odebrano wiadomość z tematu ${topic}: ${message.toString()}`);
+  if (topic === 'smarthome/devices') {
+    const data = JSON.parse(message.toString());
+
+    // Aktualizowanie urządzenia na podstawie wiadomości MQTT
+    const device = devices.find(d => d.id === data.id);
+    if (device) {
+      device.status = data.status;
+
+      // Informowanie frontendu o zmianie przez WebSocket
+      io.emit('device-update', device);
+    }
+  }
 });
+
 
 app.post('/mqtt/publish', (req, res) => {
   const { topic, message } = req.body;
