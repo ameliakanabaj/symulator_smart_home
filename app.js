@@ -1,6 +1,8 @@
 const apiUrl = 'http://localhost:3000/devices'; 
+const socket = io('http://localhost:3001');
 
 async function fetchDevices() {
+  
   const response = await fetch(apiUrl);
   const devices = await response.json(); 
 
@@ -12,6 +14,18 @@ async function fetchDevices() {
     listItem.textContent = `ID: ${device.id}, Nazwa: ${device.name}, Status: ${device.status}`;
     deviceList.appendChild(listItem);
   });
+}
+
+async function publishMqttMessage(topic, message) {
+  const response = await fetch('http://localhost:3000/mqtt/publish', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ topic, message }),
+  });
+
+  if (!response.ok) {
+    console.error('Błąd podczas publikacji wiadomości MQTT');
+  }
 }
 
 async function addDevice(event) {
@@ -48,13 +62,28 @@ async function updateDevice(event) {
 
   if (response.ok) {
     alert('Status urządzenia został zmieniony!');
-    fetchDevices(); 
+
+    publishMqttMessage('smarthome/devices', JSON.stringify({ id: parseInt(id), status }));
+    fetchDevices();
   } else {
     alert('Błąd podczas zmiany statusu urządzenia.');
   }
 }
 
+
 document.getElementById('add-device-form').addEventListener('submit', addDevice);
 document.getElementById('update-device-form').addEventListener('submit', updateDevice);
 
 fetchDevices();
+
+socket.on('connect', () => {
+  console.log('Połączono z WebSocket');
+});
+
+socket.on('device-update', (data) => {
+  console.log('Aktualizacja urządzenia:', data);
+  fetchDevices(); 
+});
+
+
+

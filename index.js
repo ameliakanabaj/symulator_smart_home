@@ -50,29 +50,33 @@ app.post('/devices', (req, res) => {
     status
   };
   devices.push(newDevice);
+
+  io.emit('device-update', { action: 'create', device: newDevice });
+
+  mqttClient.publish('smarthome/devices', JSON.stringify(newDevice));
+
   res.status(201).json(newDevice);
 });
 
 app.put('/devices/:id', (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
-  const device = devices.find(d => d.id === parseInt(id));
+  const id = parseInt(req.params.id);
+  const { name, status } = req.body;
+  const device = devices.find(d => d.id === id);
 
-  if (!device) {
-    return res.status(404).json({ message: 'Urządzenie nie znalezione.' });
+  if (device) {
+    device.name = name || device.name;
+    device.status = status || device.status;
+
+    io.emit('device-update', { action: 'update', device });
+
+    mqttClient.publish('smarthome/devices', JSON.stringify(device));
+
+    res.json(device);
+  } else {
+    res.status(404).json({ message: 'Urządzenie nie znalezione.' });
   }
-
-  device.status = status;
-
-  // Publikowanie zmiany do MQTT
-  mqttClient.publish('smarthome/devices', JSON.stringify({
-    id: device.id,
-    name: device.name,
-    status: device.status,
-  }));
-
-  res.json(device);
 });
+
 
 app.delete('/devices/:id', (req, res) => {
   const id = parseInt(req.params.id);
@@ -80,11 +84,15 @@ app.delete('/devices/:id', (req, res) => {
 
   if (index !== -1) {
     const removedDevice = devices.splice(index, 1);
+
+    io.emit('device-update', { action: 'delete', device: removedDevice[0] });
+
     res.json(removedDevice);
   } else {
     res.status(404).json({ message: 'Urządzenie nie znalezione.' });
   }
 });
+
 
 app.listen(HTTP_PORT, () => {
   console.log(`Serwer działa na http://localhost:${HTTP_PORT}`);
@@ -122,16 +130,15 @@ mqttClient.on('message', (topic, message) => {
   if (topic === 'smarthome/devices') {
     const data = JSON.parse(message.toString());
 
-    // Aktualizowanie urządzenia na podstawie wiadomości MQTT
     const device = devices.find(d => d.id === data.id);
     if (device) {
       device.status = data.status;
 
-      // Informowanie frontendu o zmianie przez WebSocket
-      io.emit('device-update', device);
+      io.emit('device-update', { action: 'update', device });
     }
   }
 });
+
 
 
 app.post('/mqtt/publish', (req, res) => {
@@ -145,6 +152,9 @@ app.post('/mqtt/publish', (req, res) => {
     if (err) {
       return res.status(500).json({ message: 'Nie udało się opublikować wiadomości.' });
     }
+
+    io.emit('device-update', { topic, message });
+
     res.json({ message: 'Wiadomość opublikowana!' });
   });
 });

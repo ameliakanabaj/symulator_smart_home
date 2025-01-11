@@ -4,14 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart Home</title>
-  <script src="app.js" defer></script>
+  <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+  <script src="app.js" defer></script>  
 </head>
 <body>
   <h1>Symulator Smart Home</h1>
 
   <h2>Lista urządzeń</h2>
   <ul id="device-list">
+    <li id="device-1">Smart Bulb - off <button onclick="updateDevice(1, 'on')">Włącz</button><button onclick="updateDevice(1, 'off')">Wyłącz</button></li>
+    <li id="device-2">Smart Thermostat - on <button onclick="updateDevice(2, 'off')">Wyłącz</button><button onclick="updateDevice(2, 'on')">Włącz</button></li>
   </ul>
+  
 
   <h2>Dodaj urządzenie</h2>
   <form id="add-device-form">
