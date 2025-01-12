@@ -15,8 +15,8 @@ app.use(cors({
 app.use(express.json()); 
 
 let devices = [
-  { id: 1, name: 'Smart Bulb', status: 'off' },
-  { id: 2, name: 'Smart Thermostat', status: 'on' }
+  { id: 1, name: 'Smart Bulb', type: "light", status: 'off', brightness: 50 },
+  { id: 2, name: 'Smart Thermostat', type: "thermostat", status: 'on', temperature: 22 }
 ];
 
 app.get('/', (req, res) => {
@@ -41,14 +41,22 @@ app.get('/devices/search', (req, res) => {
   res.json(results);
 });
 
-
 app.post('/devices', (req, res) => {
-  const { name, status } = req.body;
+  const { name, type, status, brightness, temperature } = req.body;
+
+  if (!name || !type || !status) {
+    return res.status(400).json({ message: 'Brak wymaganych danych (name, type, status).' });
+  }
+
   const newDevice = {
     id: devices.length + 1,
     name,
-    status
+    type,
+    status,
+    ...(type === 'light' ? { brightness: brightness || 50 } : {}),
+    ...(type === 'thermostat' ? { temperature: temperature || 22 } : {}) 
   };
+
   devices.push(newDevice);
 
   io.emit('device-update', { action: 'create', device: newDevice });
@@ -57,6 +65,7 @@ app.post('/devices', (req, res) => {
 
   res.status(201).json(newDevice);
 });
+
 
 app.put('/devices/:id', (req, res) => {
   const id = parseInt(req.params.id);
@@ -76,6 +85,34 @@ app.put('/devices/:id', (req, res) => {
     res.status(404).json({ message: 'Urządzenie nie znalezione.' });
   }
 });
+
+app.put('/devices/:id/brightness', (req, res) => {
+  const id = parseInt(req.params.id);
+  const { brightness } = req.body;
+  const device = devices.find(d => d.id === id);
+
+  if (device && device.type === 'light') {
+    device.brightness = brightness;
+    res.json(device);
+  } else {
+    res.status(400).json({ message: 'Urządzenie nie obsługuje jasności.' });
+  }
+});
+
+app.put('/devices/:id/temperature', (req, res) => {
+  const id = parseInt(req.params.id);
+  const { temperature } = req.body;
+  const device = devices.find(d => d.id === id);
+
+  if (device && device.type === 'thermostat') {
+    device.temperature = temperature;
+    res.json(device);
+  } else {
+    res.status(400).json({ message: 'Urządzenie nie obsługuje temperatury.' });
+  }
+});
+
+
 
 
 app.delete('/devices/:id', (req, res) => {

@@ -4,83 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart Home</title>
-  <link rel="stylesheet" type="text/css" href="styles.css"> .
   <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-  <script src="app.js" defer></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-    }
-  
-    .device-details {
-      display: none;
-      margin-left: 20px;
-    }
-  
-    .modal {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 20px;
-      border: 1px solid #ccc;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      z-index: 10;
-    }
-  
-    .modal.active {
-      display: block;
-    }
-  
-    .backdrop {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 5;
-    }
-  
-    .backdrop.active {
-      display: block;
-    }
-  
-    button {
-      margin: 5px;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-  </style>
-  
+  <script src="app.js" defer></script>  
 </head>
 <body>
   <h1>Symulator Smart Home</h1>
 
-  <button id="add-device-button">Dodaj urządzenie</button>
+  <h2>Lista urządzeń</h2>
+  <ul id="device-list"></ul>
 
-  <ul id="device-list">
+  <h2>Dodaj urządzenie</h2>
+  <form id="add-device-form">
+    <label for="device-name">Nazwa urządzenia:</label>
+    <input type="text" id="device-name" required>
     
-  </ul>
-
-  <div id="add-device-modal" class="modal">
-    <h2>Dodaj urządzenie</h2>
-    <form id="add-device-form">
-      <label for="device-name">Nazwa urządzenia:</label>
-      <input type="text" id="device-name" required>
-      <label for="device-status">Status:</label>
-      <select id="device-status">
-        <option value="on">Włączone</option>
-        <option value="off">Wyłączone</option>
-      </select>
-      <button type="submit">Dodaj</button>
-    </form>
-    <button id="close-modal">Zamknij</button>
-  </div>
-  <div id="modal-backdrop" class="backdrop"></div>
+    <label for="device-type">Typ urządzenia:</label>
+    <select id="device-type">
+      <option value="light">Żarówka</option>
+      <option value="thermostat">Termostat</option>
+      <option value="generic">Inne</option>
+    </select>
+  
+    <label for="device-status">Status:</label>
+    <select id="device-status">
+      <option value="on">Włączone</option>
+      <option value="off">Wyłączone</option>
+    </select>
+    
+    <button type="submit">Dodaj</button>
+  </form>
+  
 
 </body>
 </html>
