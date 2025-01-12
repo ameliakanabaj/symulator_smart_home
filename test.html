@@ -4,50 +4,83 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart Home</title>
+  <link rel="stylesheet" type="text/css" href="styles.css"> .
   <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
-  <script src="app.js" defer></script>  
+  <script src="app.js" defer></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+  
+    .device-details {
+      display: none;
+      margin-left: 20px;
+    }
+  
+    .modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+    }
+  
+    .modal.active {
+      display: block;
+    }
+  
+    .backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 5;
+    }
+  
+    .backdrop.active {
+      display: block;
+    }
+  
+    button {
+      margin: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
+  
 </head>
 <body>
   <h1>Symulator Smart Home</h1>
 
-  <h2>Lista urządzeń</h2>
+  <button id="add-device-button">Dodaj urządzenie</button>
+
   <ul id="device-list">
-    <li id="device-1">Smart Bulb - off <button onclick="updateDevice(1, 'on')">Włącz</button><button onclick="updateDevice(1, 'off')">Wyłącz</button></li>
-    <li id="device-2">Smart Thermostat - on <button onclick="updateDevice(2, 'off')">Wyłącz</button><button onclick="updateDevice(2, 'on')">Włącz</button></li>
+    
   </ul>
-  
 
-  <h2>Dodaj urządzenie</h2>
-  <form id="add-device-form">
-    <label for="device-name">Nazwa urządzenia:</label>
-    <input type="text" id="device-name" required>
-    <label for="device-status">Status:</label>
-    <select id="device-status">
-      <option value="on">Włączone</option>
-      <option value="off">Wyłączone</option>
-    </select>
-    <button type="submit">Dodaj</button>
-  </form>
-
-  <h2>Zmień status urządzenia</h2>
-  <form id="update-device-form">
-    <label for="update-device-id">ID urządzenia:</label>
-    <input type="number" id="update-device-id" required>
-    <label for="update-device-status">Nowy status:</label>
-    <select id="update-device-status">
-      <option value="on">Włączone</option>
-      <option value="off">Wyłączone</option>
-    </select>
-    <button type="submit">Zmień</button>
-  </form>
-  <h2>Wysyłanie wiadomości MQTT</h2>
-  <form id="mqtt-form">
-    <label for="mqtt-topic">Temat:</label>
-    <input type="text" id="mqtt-topic" value="smarthome/devices" required>
-    <label for="mqtt-message">Wiadomość:</label>
-    <input type="text" id="mqtt-message" required>
-    <button type="submit">Wyślij</button>
-  </form>
+  <div id="add-device-modal" class="modal">
+    <h2>Dodaj urządzenie</h2>
+    <form id="add-device-form">
+      <label for="device-name">Nazwa urządzenia:</label>
+      <input type="text" id="device-name" required>
+      <label for="device-status">Status:</label>
+      <select id="device-status">
+        <option value="on">Włączone</option>
+        <option value="off">Wyłączone</option>
+      </select>
+      <button type="submit">Dodaj</button>
+    </form>
+    <button id="close-modal">Zamknij</button>
+  </div>
+  <div id="modal-backdrop" class="backdrop"></div>
 
 </body>
 </html>
