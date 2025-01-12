@@ -73,6 +73,25 @@ async function updateDevice(event) {
 
 document.getElementById('add-device-form').addEventListener('submit', addDevice);
 document.getElementById('update-device-form').addEventListener('submit', updateDevice);
+document.getElementById('mqtt-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const topic = document.getElementById('mqtt-topic').value;
+  const message = document.getElementById('mqtt-message').value;
+
+  const response = await fetch('http://localhost:3000/mqtt/publish', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ topic, message })
+  });
+
+  if (response.ok) {
+    alert('Wiadomość MQTT wysłana!');
+  } else {
+    alert('Błąd podczas wysyłania wiadomości MQTT.');
+  }
+});
+
 
 fetchDevices();
 

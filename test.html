@@ -40,5 +40,14 @@
     </select>
     <button type="submit">Zmień</button>
   </form>
+  <h2>Wysyłanie wiadomości MQTT</h2>
+  <form id="mqtt-form">
+    <label for="mqtt-topic">Temat:</label>
+    <input type="text" id="mqtt-topic" value="smarthome/devices" required>
+    <label for="mqtt-message">Wiadomość:</label>
+    <input type="text" id="mqtt-message" required>
+    <button type="submit">Wyślij</button>
+  </form>
+
 </body>
 </html>

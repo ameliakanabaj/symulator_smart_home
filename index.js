@@ -129,7 +129,6 @@ mqttClient.on('connect', () => {
 mqttClient.on('message', (topic, message) => {
   if (topic === 'smarthome/devices') {
     const data = JSON.parse(message.toString());
-
     const device = devices.find(d => d.id === data.id);
     if (device) {
       device.status = data.status;
@@ -138,7 +137,6 @@ mqttClient.on('message', (topic, message) => {
     }
   }
 });
-
 
 
 app.post('/mqtt/publish', (req, res) => {
