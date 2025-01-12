@@ -19,17 +19,22 @@
     <input type="text" id="device-name" required>
     
     <label for="device-type">Typ urządzenia:</label>
-    <select id="device-type">
-      <option value="light">Żarówka</option>
-      <option value="thermostat">Termostat</option>
-      <option value="generic">Inne</option>
+    <select id="device-type" required>
+      <option value="light">Light</option>
+      <option value="thermostat">Thermostat</option>
+      <option value="sound">Sound</option>
+      <option value="accessory">Accessory</option>
+      <option value="others">Others</option>
+      <option value="fan">Fan</option>
     </select>
-  
+    
     <label for="device-status">Status:</label>
     <select id="device-status">
       <option value="on">Włączone</option>
       <option value="off">Wyłączone</option>
     </select>
+  
+    <div id="additional-fields"></div>
     
     <button type="submit">Dodaj</button>
   </form>

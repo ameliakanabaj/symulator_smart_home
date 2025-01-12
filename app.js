@@ -3,32 +3,34 @@ const socket = io('http://localhost:3001');
 
 async function fetchDevices() {
   const response = await fetch(apiUrl);
-  const devices = await response.json(); 
+  const devices = await response.json();
 
   const deviceList = document.getElementById('device-list');
   deviceList.innerHTML = '';
 
   devices.forEach(device => {
-    const listItem = document.createElement('li');
-    listItem.innerHTML = `
-      <p>ID: ${device.id}, Nazwa: ${device.name}, Typ: ${device.type}, Status: ${device.status}</p>
-      ${device.type === 'light' ? `
-        <label>Jasność: ${device.brightness}</label>
-        <input type="range" min="0" max="100" value="${device.brightness}" 
-               oninput="updateDeviceBrightness(${device.id}, this.value)">
-      ` : ''}
-      ${device.type === 'thermostat' ? `
-        <label>Temperatura: ${device.temperature}°C</label>
-        <input type="number" min="10" max="30" value="${device.temperature}" 
-               onchange="updateDeviceTemperature(${device.id}, this.value)">
-      ` : ''}
-      <button onclick="toggleDeviceStatus(${device.id}, '${device.status === 'on' ? 'off' : 'on'}')">
-        ${device.status === 'on' ? 'Wyłącz' : 'Włącz'}
-      </button>
-    `;
-    deviceList.appendChild(listItem);
+    let listItem = `ID: ${device.id}, Nazwa: ${device.name}, Typ: ${device.type}, Status: ${device.status}`;
+
+    if (device.type === 'light') {
+      listItem += `, Jasność: ${device.brightness}`;
+    } else if (device.type === 'thermostat') {
+      listItem += `, Temperatura: ${device.temperature}`;
+    } else if (device.type === 'sound') {
+      listItem += `, Głośność: ${device.volume}`;
+    } else if (device.type === 'accessory') {
+      listItem += `, Głośność: ${device.volume}, Kanał: ${device.channel}`;
+    } else if (device.type === 'others') {
+      listItem += `, Opis: ${device.description}`;
+    } else if (device.type === 'fan') {
+      listItem += `, Prędkość: ${device.speed}`;
+    }
+
+    const listItemElement = document.createElement('li');
+    listItemElement.textContent = listItem;
+    deviceList.appendChild(listItemElement);
   });
 }
+
 
 async function addDevice(event) {
   event.preventDefault();
@@ -109,6 +111,35 @@ async function updateDeviceTemperature(id, temperature) {
 }
 
 document.getElementById('add-device-form').addEventListener('submit', addDevice);
+document.getElementById('device-type').addEventListener('change', (event) => {
+  const additionalFields = document.getElementById('additional-fields');
+  additionalFields.innerHTML = ''; 
+
+  switch (event.target.value) {
+    case 'light':
+      additionalFields.innerHTML = '<label for="brightness">Jasność:</label><input type="number" id="brightness" min="1" max="100">';
+      break;
+    case 'thermostat':
+      additionalFields.innerHTML = '<label for="temperature">Temperatura:</label><input type="number" id="temperature">';
+      break;
+    case 'sound':
+      additionalFields.innerHTML = '<label for="volume">Głośność:</label><input type="number" id="volume" min="1" max="100">';
+      break;
+    case 'accessory':
+      additionalFields.innerHTML = `
+        <label for="volume">Głośność:</label><input type="number" id="volume" min="1" max="100">
+        <label for="channel">Kanał:</label><input type="number" id="channel">
+      `;
+      break;
+    case 'fan':
+      additionalFields.innerHTML = '<label for="speed">Prędkość:</label><input type="number" id="speed" min="1" max="5">';
+      break;
+    case 'others':
+      additionalFields.innerHTML = '<label for="description">Opis:</label><input type="text" id="description">';
+      break;
+  }
+});
+
 
 socket.on('connect', () => {
   console.log('Połączono z WebSocket');

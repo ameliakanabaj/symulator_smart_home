@@ -15,9 +15,14 @@ app.use(cors({
 app.use(express.json()); 
 
 let devices = [
-  { id: 1, name: 'Smart Bulb', type: "light", status: 'off', brightness: 50 },
-  { id: 2, name: 'Smart Thermostat', type: "thermostat", status: 'on', temperature: 22 }
+  { id: 1, name: 'Smart Bulb', type: 'light', status: 'off', brightness: 50 },
+  { id: 2, name: 'Smart Thermostat', type: 'thermostat', status: 'on', temperature: 22 },
+  { id: 3, name: 'Smart Speaker', type: 'sound', status: 'on', volume: 30 },
+  { id: 4, name: 'Smart TV', type: 'accessory', status: 'on', volume: 50, channel: 5 },
+  { id: 5, name: 'Custom Device', type: 'others', status: 'off', description: 'Custom behavior' },
+  { id: 6, name: 'Smart Fan', type: 'fan', status: 'on', speed: 3 }
 ];
+
 
 app.get('/', (req, res) => {
   res.send('Witamy w Symulatorze Smart Home!');
@@ -42,20 +47,24 @@ app.get('/devices/search', (req, res) => {
 });
 
 app.post('/devices', (req, res) => {
-  const { name, type, status, brightness, temperature } = req.body;
+  const { name, type, status, brightness, temperature, volume, channel, description, speed } = req.body;
+  const newDevice = { id: devices.length + 1, name, type, status };
 
-  if (!name || !type || !status) {
-    return res.status(400).json({ message: 'Brak wymaganych danych (name, type, status).' });
+  // Dodaj właściwości specyficzne dla danego typu
+  if (type === 'light') {
+    newDevice.brightness = brightness || 50;
+  } else if (type === 'thermostat') {
+    newDevice.temperature = temperature || 20;
+  } else if (type === 'sound') {
+    newDevice.volume = volume || 30;
+  } else if (type === 'accessory') {
+    newDevice.volume = volume || 30;
+    newDevice.channel = channel || 1;
+  } else if (type === 'others') {
+    newDevice.description = description || 'No description provided';
+  } else if (type === 'fan') {
+    newDevice.speed = speed || 1;
   }
-
-  const newDevice = {
-    id: devices.length + 1,
-    name,
-    type,
-    status,
-    ...(type === 'light' ? { brightness: brightness || 50 } : {}),
-    ...(type === 'thermostat' ? { temperature: temperature || 22 } : {}) 
-  };
 
   devices.push(newDevice);
 
@@ -65,7 +74,6 @@ app.post('/devices', (req, res) => {
 
   res.status(201).json(newDevice);
 });
-
 
 app.put('/devices/:id', (req, res) => {
   const id = parseInt(req.params.id);
