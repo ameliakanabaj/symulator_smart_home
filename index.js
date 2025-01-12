@@ -50,7 +50,6 @@ app.post('/devices', (req, res) => {
   const { name, type, status, brightness, temperature, volume, channel, description, speed } = req.body;
   const newDevice = { id: devices.length + 1, name, type, status };
 
-  // Dodaj właściwości specyficzne dla danego typu
   if (type === 'light') {
     newDevice.brightness = brightness || 50;
   } else if (type === 'thermostat') {
