@@ -8,6 +8,12 @@ export default function Devices() {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredDevices, setFilteredDevices] = useState([]);
 
+    const [newDevice, setNewDevice] = useState({
+        name: '',
+        type: 'light',
+        status: 'off',
+    });
+
     const fetchDevices = async () => {
         try {
             const response = await fetch('http://localhost:3000/devices');
@@ -62,6 +68,29 @@ export default function Devices() {
         navigate(`/device/${id}`);
     };
 
+    const handleAddDevice = async () => {
+        try {
+            const response = await fetch('http://localhost:3000/devices', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newDevice),
+            });
+
+            if (response.ok) {
+                const addedDevice = await response.json();
+                setDevices((prevDevices) => [...prevDevices, addedDevice]);
+                setFilteredDevices((prevDevices) => [...prevDevices, addedDevice]);
+                setNewDevice({ name: '', type: 'light', status: 'off' }); 
+            } else {
+                console.log('Error when adding device');
+            }
+        } catch (error) {
+            console.log('Error when adding device:', error);
+        }
+    };
+
     useEffect(() => {
         fetchDevices();
     }, []);
@@ -76,6 +105,36 @@ export default function Devices() {
                     onChange={(e) => handleSearch(e.target.value)}
                 />
             </div>
+
+            <div className="add-device-form">
+                <h3>Add a new device</h3>
+                <input
+                    type="text"
+                    placeholder="Device name"
+                    value={newDevice.name}
+                    onChange={(e) => setNewDevice({ ...newDevice, name: e.target.value })}
+                />
+                <select
+                    value={newDevice.type}
+                    onChange={(e) => setNewDevice({ ...newDevice, type: e.target.value })}
+                >
+                    <option value="light">Light</option>
+                    <option value="thermostat">Thermostat</option>
+                    <option value="sound">Sound</option>
+                    <option value="accessory">Accessory</option>
+                    <option value="fan">Fan</option>
+                    <option value="others">Others</option>
+                </select>
+                <select
+                    value={newDevice.status}
+                    onChange={(e) => setNewDevice({ ...newDevice, status: e.target.value })}
+                >
+                    <option value="on">On</option>
+                    <option value="off">Off</option>
+                </select>
+                <button onClick={handleAddDevice}>Add Device</button>
+            </div>
+
             <ul>
                 {filteredDevices.map((device, index) => (
                     <li key={index} className="device-item" onClick={() => handleDeviceClick(device.id)}>
@@ -85,7 +144,7 @@ export default function Devices() {
                         <button
                             className="delete-button"
                             onClick={(e) => {
-                                e.stopPropagation(); 
+                                e.stopPropagation();
                                 handleDeleteDevice(device.id);
                             }}
                         >

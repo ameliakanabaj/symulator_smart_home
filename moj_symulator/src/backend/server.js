@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import bcrypt from 'bcrypt';
 
 const app = express();
 const HTTP_PORT = 3000;
@@ -113,34 +114,6 @@ app.put('/devices/:id', (req, res) => {
 });
 
   
-  app.put('/devices/:id/brightness', (req, res) => {
-    const id = parseInt(req.params.id);
-    const { brightness } = req.body;
-    const device = devices.find(d => d.id === id);
-  
-    if (device && device.type === 'light') {
-      device.brightness = brightness;
-      res.json(device);
-    } else {
-      res.status(400).json({ message: 'Urządzenie nie obsługuje jasności.' });
-    }
-  });
-  
-  app.put('/devices/:id/temperature', (req, res) => {
-    const id = parseInt(req.params.id);
-    const { temperature } = req.body;
-    const device = devices.find(d => d.id === id);
-  
-    if (device && device.type === 'thermostat') {
-      device.temperature = temperature;
-      res.json(device);
-    } else {
-      res.status(400).json({ message: 'Urządzenie nie obsługuje temperatury.' });
-    }
-  });
-  
-  
-  
   
   app.delete('/devices/:id', (req, res) => {
     const id = parseInt(req.params.id);
@@ -154,6 +127,88 @@ app.put('/devices/:id', (req, res) => {
     }
   });
 
+
+  const users = [];
+
+  app.post('/api/register', async (req, res) => {
+    console.log('Dane odebrane na backendzie:', req.body);
+    const { email, password, firstName, lastName, confirmPassword } = req.body;
+
+    // Sprawdzenie, czy hasła się zgadzają
+    if (password !== confirmPassword) {
+        return res.status(400).send('Hasła się nie zgadzają.');
+    }
+
+    // Sprawdzamy, czy użytkownik o tym emailu już istnieje
+    const userExists = users.find(user => user.email === email);
+    if (userExists) {
+        return res.status(400).send('Użytkownik o takim emailu już istnieje.');
+    }
+
+    // Haszowanie hasła
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Tworzenie nowego użytkownika
+    const newUser = {
+        id: users.length + 1,
+        email,
+        password: hashedPassword,
+        firstName,
+        lastName,
+    };
+
+    users.push(newUser);
+    console.log('Nowy użytkownik:', newUser);
+
+    // Wysyłanie odpowiedzi do klienta
+    res.status(201).send({
+        message: 'Zarejestrowano pomyślnie',
+        user: {
+            email: newUser.email,
+            firstName: newUser.firstName,
+            lastName: newUser.lastName,
+        }
+    });
+});
+
+  app.get('/api/users', (req, res) => {
+    console.log(users);
+    console.log('Żądanie do /api/users');
+    if (users.length === 0) {
+        return res.status(404).send('Brak użytkowników');
+    }
+  
+    const usersInfo = users.map(user => ({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+    }));
+  
+    res.status(200).json(usersInfo);
+  });
+
+  app.post('/api/login', async (req, res) => {
+    const { email, password } = req.body;
+  
+    const user = users.find(user => user.email === email);
+    console.log('Znaleziony użytkownik:', user);
+    if (!user) {
+      return res.status(404).send('Nie znaleziono użytkownika');
+    }
+  
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(401).send('Nieprawidłowe hasło');
+    }
+  
+    res.status(200).json({
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    });
+  });
 
   
 app.listen(HTTP_PORT, () => {
