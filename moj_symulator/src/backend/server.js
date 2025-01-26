@@ -65,10 +65,6 @@ const devices = [
   
     devices.push(newDevice);
   
-    io.emit('device-update', { action: 'create', device: newDevice });
-  
-    mqttClient.publish('smarthome/devices', JSON.stringify(newDevice));
-  
     res.status(201).json(newDevice);
   });
   
@@ -152,9 +148,6 @@ app.put('/devices/:id', (req, res) => {
   
     if (index !== -1) {
       const removedDevice = devices.splice(index, 1);
-  
-      io.emit('device-update', { action: 'delete', device: removedDevice[0] });
-  
       res.json(removedDevice);
     } else {
       res.status(404).json({ message: 'Urządzenie nie znalezione.' });

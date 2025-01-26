@@ -1,40 +1,58 @@
 .devices {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.devices .search-bar {
   display: flex;
   justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+  margin-bottom: 1.5rem;
+}
+.devices .search-bar input {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+.devices .search-bar input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 4px rgba(52, 152, 219, 0.5);
 }
 .devices ul {
-  list-style: none;
+  list-style-type: none;
   padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  width: 90%;
-  max-width: 1200px;
 }
-.devices li {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  padding: 1.5rem;
-  cursor: pointer;
-  text-align: center;
-  font-family: "Roboto", sans-serif;
-}
-.devices li:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-.devices li div {
+.devices ul .device-item {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
-.devices li div b {
-  color: #555;
-  font-size: 1.1rem;
+.devices ul .device-item:hover {
+  background: #f8f9fa;
+}
+.devices ul .device-item button.delete-button {
+  background: #e74c3c;
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.devices ul .device-item button.delete-button:hover {
+  background: #c0392b;
 }/*# sourceMappingURL=Devices.css.map */
