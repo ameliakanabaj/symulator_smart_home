@@ -201,11 +201,62 @@ app.post('/mqtt/publish', (req, res) => {
   });
 });
 
+mqttClient.on('connect', () => {
+  mqttClient.subscribe('smarthome/devices/control', (err) => {
+    if (!err) {
+      console.log('Subscribed to smarthome/devices/control');
+    }
+  });
+});
+
+mqttClient.on('message', (topic, message) => {
+  if (topic === 'smarthome/devices/control') {
+    const { id, action, value } = JSON.parse(message.toString());
+    const device = devices.find((d) => d.id === id);
+    if (device) {
+      if (action === 'status') {
+        device.status = value; // Zmieniamy status urządzenia (np. ON/OFF)
+        console.log(`Device ${id} status updated to ${value}`);
+      } else if (action === 'brightness' && device.type === 'light') {
+        device.brightness = value; // Zmieniamy jasność (dla świateł)
+        console.log(`Device ${id} brightness updated to ${value}`);
+      }
+    }
+  }
+});
+
+setInterval(() => {
+  mqttClient.publish('smarthome/devices/state', JSON.stringify(devices));
+  console.log('Published devices state');
+}, 10000);
+
+mqttClient.subscribe('smarthome/devices/+/command', (err) => {
+  if (!err) {
+    console.log('Subscribed to smarthome/devices/+/command');
+  }
+});
+
+mqttClient.on('message', (topic, message) => {
+  const match = topic.match(/smarthome\/devices\/(\d+)\/command/);
+  if (match) {
+    const deviceId = parseInt(match[1]);
+    const { command, value } = JSON.parse(message.toString());
+    const device = devices.find((d) => d.id === deviceId);
+    if (device) {
+      if (command === 'status') device.status = value;
+      console.log(`Device ${deviceId} status updated to ${value}`);
+    }
+  }
+});
+
+
 const wsServer = http.createServer(app);
-const io = new Server(wsServer, {
+const io = socketIo(server, {
   cors: {
-    origin: 'http://127.0.0.1:5500',
-    methods: ['GET', 'POST'],
+    origin: "http://localhost:3002",  // Adres, z którego chcesz zezwolić na połączenia
+    methods: ["GET", "POST"],
+    allowedHeaders: ["my-custom-header"],
+    credentials: true
   }
 });
 
@@ -219,6 +270,44 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('Rozłączono WebSocket');
   });
+});
+
+io.on('connection', (socket) => {
+  console.log('New WebSocket connection');
+
+  socket.on('request-devices', () => {
+    socket.emit('device-list', devices);
+  });
+});
+
+app.put('/devices/:id', (req, res) => {
+  const device = devices.find((d) => d.id === parseInt(req.params.id));
+  if (device) {
+    device.status = req.body.status;
+    io.emit('device-update', { action: 'update', device });
+    res.json(device);
+  } else {
+    res.status(404).json({ message: 'Device not found' });
+  }
+});
+
+app.get('/devices/:id', (req, res) => {
+  const device = devices.find((d) => d.id === parseInt(req.params.id));
+  if (device) {
+    res.json(device);
+  } else {
+    res.status(404).json({ message: 'Device not found' });
+  }
+});
+
+app.put('/devices/:id/channel', (req, res) => {
+  const device = devices.find((d) => d.id === parseInt(req.params.id));
+  if (device) {
+    device.channel = req.body.channel;
+    res.json(device);
+  } else {
+    res.status(404).json({ message: 'Device not found' });
+  }
 });
 
 const WS_PORT = 3001;
