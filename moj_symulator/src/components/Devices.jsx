@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './styles/Devices.css';
+import Header from './Header';
 
 export default function Devices() {
     const navigate = useNavigate();
@@ -103,63 +104,66 @@ export default function Devices() {
     }, [userId]);
 
     return (
-        <div className="devices">
-            <div className="search-bar">
-                <input
-                    type="text"
-                    placeholder="Search devices by name or status..."
-                    value={searchQuery}
-                    onChange={(e) => handleSearch(e.target.value)}
-                />
-            </div>
+        <>
+            <Header />
+            <div className="devices">
+                <div className="search-bar">
+                    <input
+                        type="text"
+                        placeholder="Search devices by name or status..."
+                        value={searchQuery}
+                        onChange={(e) => handleSearch(e.target.value)}
+                    />
+                </div>
 
-            <div className="add-device-form">
-                <h3>Add a New Device</h3>
-                <input
-                    type="text"
-                    placeholder="Device name"
-                    value={newDevice.name}
-                    onChange={(e) => setNewDevice({ ...newDevice, name: e.target.value })}
-                />
-                <select
-                    value={newDevice.type}
-                    onChange={(e) => setNewDevice({ ...newDevice, type: e.target.value })}
-                >
-                    <option value="light">Light</option>
-                    <option value="thermostat">Thermostat</option>
-                    <option value="sound">Sound</option>
-                    <option value="accessory">Accessory</option>
-                    <option value="fan">Fan</option>
-                    <option value="others">Others</option>
-                </select>
-                <select
-                    value={newDevice.status}
-                    onChange={(e) => setNewDevice({ ...newDevice, status: e.target.value })}
-                >
-                    <option value="on">On</option>
-                    <option value="off">Off</option>
-                </select>
-                <button onClick={handleAddDevice}>Add Device</button>
-            </div>
+                <div className="add-device-form">
+                    <h3>Add a New Device</h3>
+                    <input
+                        type="text"
+                        placeholder="Device name"
+                        value={newDevice.name}
+                        onChange={(e) => setNewDevice({ ...newDevice, name: e.target.value })}
+                    />
+                    <select
+                        value={newDevice.type}
+                        onChange={(e) => setNewDevice({ ...newDevice, type: e.target.value })}
+                    >
+                        <option value="light">Light</option>
+                        <option value="thermostat">Thermostat</option>
+                        <option value="sound">Sound</option>
+                        <option value="accessory">Accessory</option>
+                        <option value="fan">Fan</option>
+                        <option value="others">Others</option>
+                    </select>
+                    <select
+                        value={newDevice.status}
+                        onChange={(e) => setNewDevice({ ...newDevice, status: e.target.value })}
+                    >
+                        <option value="on">On</option>
+                        <option value="off">Off</option>
+                    </select>
+                    <button onClick={handleAddDevice}>Add Device</button>
+                </div>
 
-            <ul>
-                {filteredDevices.map((device, index) => (
-                    <li key={index} className="device-item" onClick={() => handleDeviceClick(device.id)}>
-                        <div>
-                            <b>Name:</b> {device.name}, <b>Status:</b> {device.status}
-                        </div>
-                        <button
-                            className="delete-button"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteDevice(device.id);
-                            }}
-                        >
-                            Delete
-                        </button>
-                    </li>
-                ))}
-            </ul>
-        </div>
+                <ul>
+                    {filteredDevices.map((device, index) => (
+                        <li key={index} className="device-item" onClick={() => handleDeviceClick(device.id)}>
+                            <div>
+                                <b>Name:</b> {device.name}, <b>Status:</b> {device.status}
+                            </div>
+                            <button
+                                className="delete-button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteDevice(device.id);
+                                }}
+                            >
+                                Delete
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </>
     );
 }
