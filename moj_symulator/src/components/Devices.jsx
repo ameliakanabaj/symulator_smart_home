@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import './styles/Devices.css';
 
 export default function Devices() {
     const navigate = useNavigate();
+    const { userId } = useParams();
     const [devices, setDevices] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredDevices, setFilteredDevices] = useState([]);
-
     const [newDevice, setNewDevice] = useState({
         name: '',
         type: 'light',
@@ -15,85 +15,92 @@ export default function Devices() {
     });
 
     const fetchDevices = async () => {
-        try {
-            const response = await fetch('http://localhost:3000/devices');
+        try {2  
+            const response = await fetch(`http://localhost:3000/devices/${userId}`);
             if (!response.ok) {
-                throw new Error('We could not fetch the data for devices');
+                throw new Error('Failed to fetch devices');
             }
             const data = await response.json();
             setDevices(data);
             setFilteredDevices(data);
         } catch (error) {
-            console.log('Error when fetching devices:', error);
+            console.log('Error while fetching devices:', error);
         }
     };
 
     const handleDeleteDevice = async (id) => {
         try {
-            const response = await fetch(`http://localhost:3000/devices/${id}`, {
+            const response = await fetch(`http://localhost:3000/devices/${userId}/${id}`, {
                 method: 'DELETE',
             });
             if (response.ok) {
                 setDevices((prevDevices) => prevDevices.filter((device) => device.id !== id));
                 setFilteredDevices((prevDevices) => prevDevices.filter((device) => device.id !== id));
             } else {
-                console.log('Error when deleting device');
+                console.log('Failed to delete the device');
             }
         } catch (error) {
-            console.log('Error when deleting device:', error);
+            console.log('Error while deleting device:', error);
         }
     };
 
     const handleSearch = async (query) => {
+        console.log(userId); // debug
+    
         setSearchQuery(query);
-
         if (query.trim() === '') {
             setFilteredDevices(devices);
         } else {
             try {
-                const response = await fetch(`http://localhost:3000/devices/search?query=${query}`);
+                const response = await fetch(`http://localhost:3000/devices/search/${userId}?query=${encodeURIComponent(query)}`);
                 if (response.ok) {
                     const data = await response.json();
                     setFilteredDevices(data);
                 } else {
-                    console.log('Error when searching for devices');
+                    console.log('Failed to search for devices');
                 }
             } catch (error) {
-                console.log('Error when searching for devices:', error);
+                console.log('Error while searching for devices:', error);
             }
         }
     };
-
+    
     const handleDeviceClick = (id) => {
-        navigate(`/device/${id}`);
+        navigate(`/device/${userId}/${id}`); 
     };
+    
 
     const handleAddDevice = async () => {
         try {
-            const response = await fetch('http://localhost:3000/devices', {
+            const response = await fetch(`http://localhost:3000/devices`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(newDevice),
+                body: JSON.stringify({ ...newDevice, userId }),
             });
 
             if (response.ok) {
                 const addedDevice = await response.json();
                 setDevices((prevDevices) => [...prevDevices, addedDevice]);
                 setFilteredDevices((prevDevices) => [...prevDevices, addedDevice]);
-                setNewDevice({ name: '', type: 'light', status: 'off' }); 
+                setNewDevice({ name: '', type: 'light', status: 'off' });
             } else {
-                console.log('Error when adding device');
+                console.log('Failed to add the device');
             }
         } catch (error) {
-            console.log('Error when adding device:', error);
+            console.log('Error while adding a device:', error);
         }
     };
 
     useEffect(() => {
-        fetchDevices();
-    }, []);
+        if (userId) {
+            fetchDevices();
+        } else {
+            console.log('User not logged in');
+            navigate('/login');
+        }
+    }, [userId]);
 
     return (
         <div className="devices">
@@ -107,7 +114,7 @@ export default function Devices() {
             </div>
 
             <div className="add-device-form">
-                <h3>Add a new device</h3>
+                <h3>Add a New Device</h3>
                 <input
                     type="text"
                     placeholder="Device name"

@@ -5,19 +5,20 @@ import './styles/Device.css';
 export default function Device() {
     const navigate = useNavigate();
     const { id } = useParams(); 
+    const { userId } = useParams(); 
     const [device, setDevice] = useState(null); 
     const [loading, setLoading] = useState(true); 
     const [error, setError] = useState(null); 
 
     useEffect(() => {
-        fetch(`http://localhost:3000/devices/${id}`)
+        fetch(`http://localhost:3000/devices/${userId}/${id}`)
         .then((response) => response.json())
         .then((data) => {
             setDevice(data); 
             setLoading(false); 
         })
         .catch((err) => {
-            setError('Could not fethc device');
+            setError('Could not fetch device');
             setLoading(false);
         });
     }, [id]); 
@@ -30,23 +31,24 @@ export default function Device() {
     };
 
     const handleSave = () => {
-        fetch(`http://localhost:3000/devices/${id}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(device), 
+        fetch(`http://localhost:3000/devices/${userId}/${id}`, { 
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ...device, userId }),
         })
         .then((response) => response.json())
         .then((updatedDevice) => {
             setDevice(updatedDevice);
             alert('Device successfully updated');
-            navigate('/');
+            navigate(`/devices/${userId}`);
         })
         .catch((err) => {
             setError('Could not update device');
         });
     };
+    
 
     if (loading) {
         return <div>Loading...</div>;

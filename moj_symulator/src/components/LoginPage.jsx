@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './styles/Login.css';  // Stylizacja
+import './styles/Login.css';  
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
@@ -28,7 +28,7 @@ export default function Login() {
 
             if (response.ok) {
                 console.log('Logged in successfully:', data);
-                navigate('/devices');
+                navigate(`/devices/${data.id}`);
             } else {
                 setError(data.message || 'Login failed');
             }

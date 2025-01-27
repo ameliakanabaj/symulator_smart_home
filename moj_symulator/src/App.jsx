@@ -17,8 +17,8 @@ function App() {
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/registry" element={<RegistryPage/>} />
-          <Route path="/devices" element={<Devices />} />
-          <Route path="/device/:id" element={<Device />} />
+          <Route path="/devices/:userId" element={<Devices />} />
+          <Route path="/device/:userId/:id" element={<Device />} />
         </Routes>
       </Router>
     </>
