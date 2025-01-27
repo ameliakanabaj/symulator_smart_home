@@ -12,6 +12,15 @@
   font-size: 1.8rem;
   color: #2c6e49;
 }
+.auth-container .message {
+  background-color: green;
+  color: white;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  text-align: center;
+}
 .auth-container .error-message {
   background-color: #e74c3c;
   color: white;

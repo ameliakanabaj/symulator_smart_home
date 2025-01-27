@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 export default function Register() {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
+    const [message, setMessage] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -35,7 +36,9 @@ export default function Register() {
             const data = await response.json();
 
             if (response.ok) {
-                console.log('Registry completed:', data);
+                console.log('Registry completed:', data);//debug
+                setError('');
+                setMessage("Registry completed. Go to Login");
             } else {
                 setError(data.message || 'Registry failed');
             }
@@ -55,6 +58,7 @@ export default function Register() {
         <div className="auth-container">
             <button className='login' onClick={handleLoginClick}>Log in</button>
             <h2>Registry</h2>
+            <div className='message'>{message}</div>
             {error && <div className="error-message">{error}</div>}
             <form onSubmit={handleRegister}>
                 <div className="input-container">
