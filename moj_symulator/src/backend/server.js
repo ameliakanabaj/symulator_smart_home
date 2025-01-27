@@ -255,6 +255,70 @@ app.delete('/devices/:userId/:id', (req, res) => {
       lastName: user.lastName,
     });
   });
+  const schedules = {};
+
+  app.get('/schedules/:userId/:id', (req, res) => {
+      const userId = req.params.userId;
+      const id = req.params.id;
+  
+      if (!schedules[userId] || !schedules[userId][id]) {
+          return res.status(404).json({ message: "No schedule found for this device." });
+      }
+  
+      res.json(schedules[userId][id]);
+  });
+  
+  app.post('/schedules/:userId/:id', (req, res) => {
+      const { userId, id } = req.params;
+      const { timeOn, timeOff } = req.body;
+  
+      if (!timeOn || !timeOff) {
+          return res.status(400).json({ message: 'Missing timeOn or timeOff.' });
+      }
+  
+      if (!schedules[userId]) {
+          schedules[userId] = {};
+      }
+  
+      schedules[userId][id] = { timeOn, timeOff };
+  
+      res.status(201).json({
+          message: 'Schedule created or updated successfully.',
+          schedule: schedules[userId][id],
+      });
+  });
+  
+  // app.put('/schedules/:userId/:id', (req, res) => {
+  //     const { userId, id } = req.params;
+  //     const { timeOn, timeOff } = req.body;
+  
+  //     if (!schedules[userId] || !schedules[userId][id]) {
+  //         return res.status(404).json({ message: "No schedule found for this device." });
+  //     }
+  
+  //     schedules[userId][id] = {
+  //         timeOn: timeOn || schedules[userId][id].timeOn,
+  //         timeOff: timeOff || schedules[userId][id].timeOff,
+  //     };
+  
+  //     res.json({
+  //         message: 'Schedule updated successfully.',
+  //         schedule: schedules[userId][id],
+  //     });
+  // });
+  
+  app.delete('/schedules/:userId/:id', (req, res) => {
+      const { userId, id } = req.params;
+  
+      if (!schedules[userId] || !schedules[userId][id]) {
+          return res.status(404).json({ message: "No schedule found for this device." });
+      }
+  
+      delete schedules[userId][id]; 
+  
+      res.json({ message: 'Schedule deleted successfully.' });
+  });
+  
 
   
 app.listen(HTTP_PORT, () => {
