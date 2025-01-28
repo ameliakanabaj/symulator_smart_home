@@ -1,0 +1,112 @@
+.admin-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  font-family: "Arial", sans-serif;
+}
+.admin-panel .section {
+  margin-top: 80px;
+  background: #f9f9f9;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.admin-panel .section h2 {
+  font-size: 24px;
+  color: #2ecc71;
+  margin-bottom: 20px;
+}
+.admin-panel .section ul {
+  list-style-type: none;
+  padding: 0;
+}
+.admin-panel .section ul li {
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr;
+}
+.admin-panel .section ul li button {
+  margin-left: 10px;
+  padding: 8px 12px;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.admin-panel .section ul li button:hover {
+  background-color: #27ae60;
+}
+.admin-panel .section input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.admin-panel .section .form-group {
+  margin-bottom: 15px;
+}
+.admin-panel .section .form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #555;
+}
+.admin-panel .section .form-actions {
+  display: flex;
+  gap: 10px;
+}
+.admin-panel .section .form-actions button {
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.admin-panel .section .form-actions button.btn-save {
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+}
+.admin-panel .section .form-actions button.btn-save:hover {
+  background-color: #27ae60;
+}
+.admin-panel .section .form-actions button.btn-cancel {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+}
+.admin-panel .section .form-actions button.btn-cancel:hover {
+  background-color: #c0392b;
+}
+.admin-panel .form {
+  background: #ffffff;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.admin-panel .form h3 {
+  font-size: 20px;
+  color: #2ecc71;
+  margin-bottom: 15px;
+}
+.admin-panel .form input {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+}/*# sourceMappingURL=AdminPanel.css.map */

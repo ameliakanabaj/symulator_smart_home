@@ -217,22 +217,6 @@ app.delete('/devices/:userId/:id', (req, res) => {
     });
 });
 
-  app.get('/api/users', (req, res) => {
-    console.log(users);
-    console.log('Żądanie do /api/users');//debug
-    if (users.length === 0) {
-        return res.status(404).send('No users found');
-    }
-  
-    const usersInfo = users.map(user => ({
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-    }));
-  
-    res.status(200).json(usersInfo);
-  });
 
   app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
@@ -371,6 +355,77 @@ app.delete('/admins/:email', (req, res) => {
     admins.splice(index, 1);
     res.json({ message: 'Admin deleted', admins });
 });
+
+app.get('/api/users', (req, res) => {
+    console.log(users);
+    console.log('Żądanie do /api/users');//debug
+    if (users.length === 0) {
+        return res.status(404).send('No users found');
+    }
+  
+    const usersInfo = users.map(user => ({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+    }));
+  
+    res.status(200).json(usersInfo);
+});
+
+app.post('/api/users', (req, res) => {
+    const { id, email, firstName, lastName } = req.body;
+
+    if (!id || !email || !firstName || !lastName) {
+        return res.status(400).json({ error: 'All fields (id, email, firstName, lastName) are required' });
+    }
+
+    const userExists = users.some(user => user.id === id || user.email === email);
+    if (userExists) {
+        return res.status(400).json({ error: 'User with this ID or email already exists' });
+    }
+
+    const newUser = { id, email, firstName, lastName };
+    users.push(newUser);
+
+    res.status(201).json({ message: 'User added successfully', user: newUser });
+});
+
+app.put('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+    const { email, firstName, lastName } = req.body;
+
+    if (!email && !firstName && !lastName) {
+        return res.status(400).json({ error: 'At least one field (email, firstName, or lastName) is required to update' });
+    }
+
+    const userIndex = users.findIndex(user => user.id === id);
+    if (userIndex === -1) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (email) users[userIndex].email = email;
+    if (firstName) users[userIndex].firstName = firstName;
+    if (lastName) users[userIndex].lastName = lastName;
+
+    res.json({ message: 'User updated successfully', user: users[userIndex] });
+});
+
+app.delete('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+
+    const userIndex = users.findIndex(user => user.id === id);
+    if (userIndex === -1) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    const deletedUser = users.splice(userIndex, 1);
+
+    res.json({ message: 'User deleted successfully', user: deletedUser[0] });
+});
+
+
+
 
 app.listen(HTTP_PORT, () => {
     console.log(`Serwer działa na http://localhost:${HTTP_PORT}`);
