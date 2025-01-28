@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './styles/Login.css';  
 import { useNavigate } from 'react-router-dom';
 
@@ -7,7 +7,30 @@ export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [admins, setAdmins] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    
+    const fetchAdmins = async () => {
+        try {
+            const response = await fetch('http://localhost:3000/admins')
+
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log('Fetched admins:', data);//debug
+                setAdmins(data);
+            } else {
+                setError(data.message || 'Failed to fetch admins');
+            }
+        } catch (error) {
+            console.log('Error during fetching admins:', error);
+            setError('An error occurred. Please try again.');
+        }
+    }
+
+    useEffect(() => {
+        fetchAdmins();
+    }, []);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -28,7 +51,12 @@ export default function Login() {
 
             if (response.ok) {
                 console.log('Logged in successfully:', data);
-                navigate(`/devices/${data.id}`);
+                if (admins.includes(data.email)) {
+                    console.log("admin");//debug
+                    navigate("/admin-panel");
+                } else {
+                    navigate(`/devices/${data.id}`);
+                }
             } else {
                 setError(data.message || 'Login failed');
             }

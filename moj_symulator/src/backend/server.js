@@ -307,20 +307,71 @@ app.delete('/devices/:userId/:id', (req, res) => {
   //     });
   // });
   
-  app.delete('/schedules/:userId/:id', (req, res) => {
-      const { userId, id } = req.params;
-  
-      if (!schedules[userId] || !schedules[userId][id]) {
-          return res.status(404).json({ message: "No schedule found for this device." });
-      }
-  
-      delete schedules[userId][id]; 
-  
-      res.json({ message: 'Schedule deleted successfully.' });
+app.delete('/schedules/:userId/:id', (req, res) => {
+    const { userId, id } = req.params;
+
+    if (!schedules[userId] || !schedules[userId][id]) {
+        return res.status(404).json({ message: "No schedule found for this device." });
+    }
+
+    delete schedules[userId][id]; 
+
+    res.json({ message: 'Schedule deleted successfully.' });
   });
   
 
-  
+  const admins = ['admin@smarthome.com'];
+
+  app.get('/admins', (req, res) => {
+    res.json(admins);
+});
+
+app.post('/admins', (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+    }
+
+    if (admins.includes(email)) {
+        return res.status(400).json({ error: 'Admin already exists' });
+    }
+
+    admins.push(email);
+    res.status(201).json({ message: 'Admin added', admins });
+});
+
+app.put('/admins/:oldEmail', (req, res) => {
+    const { oldEmail } = req.params;
+    const { newEmail } = req.body;
+
+    if (!newEmail) {
+        return res.status(400).json({ error: 'New email is required' });
+    }
+
+    const index = admins.indexOf(oldEmail);
+
+    if (index === -1) {
+        return res.status(404).json({ error: 'Admin not found' });
+    }
+
+    admins[index] = newEmail;
+    res.json({ message: 'Admin updated', admins });
+});
+
+app.delete('/admins/:email', (req, res) => {
+    const { email } = req.params;
+
+    const index = admins.indexOf(email);
+
+    if (index === -1) {
+        return res.status(404).json({ error: 'Admin not found' });
+    }
+
+    admins.splice(index, 1);
+    res.json({ message: 'Admin deleted', admins });
+});
+
 app.listen(HTTP_PORT, () => {
     console.log(`Serwer działa na http://localhost:${HTTP_PORT}`);
   });
