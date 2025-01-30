@@ -167,6 +167,7 @@ export default function AdminPanel() {
                         <input
                             type="email"
                             value={editAdminEmail}
+                            placeholder='Set new email'
                             onChange={(e) => setEditAdminEmail(e.target.value)}
                         />
                         <button onClick={handleEditAdmin}>Save</button>

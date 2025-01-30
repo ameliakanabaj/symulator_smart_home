@@ -1,22 +1,67 @@
 import express from 'express';
 import cors from 'cors';
 import bcrypt from 'bcrypt';
+import WebSocket from 'ws';
+import { createServer } from "http";
+import { WebSocketServer } from "ws";
 
 const app = express();
 const HTTP_PORT = 3000;
+const server = createServer(app);
+const wss = new WebSocketServer({ server });
+
+let clients = [];
+
+wss.on("connection", (ws) => {
+    console.log("Nowe połączenie WebSocket");
+
+    ws.on("message", (message) => {
+        try {
+            const data = JSON.parse(message);
+            if (data.type === "subscribe") {
+                clients.push({ ws, deviceId: data.deviceId });
+                console.log(`Subskrybent dodany dla urządzenia: ${data.deviceId}`);
+            }
+        } catch (error) {
+            console.error("Błąd parsowania JSON:", error);
+        }
+    });
+
+    ws.on("close", () => {
+        clients = clients.filter(client => client.ws !== ws);
+        console.log("Połączenie WebSocket zamknięte");
+    });
+
+    ws.on("error", (err) => {
+        console.error("Błąd WebSocket:", err);
+    });
+});
+
+
+function sendDeviceStatusUpdate(deviceId, status) {
+    console.log(`📡 Próba wysłania statusu ${status} dla urządzenia ${deviceId}`);
+
+    if (!clients.length) {
+        console.warn("⚠️ Brak połączonych klientów WebSocket.");
+        return;
+    }
+
+    clients.forEach(client => {
+        if (parseInt(client.deviceId) === parseInt(deviceId)) {
+            if (client.ws.readyState === WebSocket.OPEN) {
+                client.ws.send(JSON.stringify({ deviceId, status }));
+                console.log(`Wysłano status ${status} do urządzenia ${deviceId}`);
+            } else {
+                console.warn(`WebSocket dla urządzenia ${deviceId} jest zamknięty.`);
+            }
+        }
+    });
+}
+
 
 app.use(express.json());
 app.use(cors());
 
-// const devices = [
-//     { id: 1, name: 'Smart Bulb', type: 'light', status: 'off', brightness: 50 },
-//     { id: 2, name: 'Smart Thermostat', type: 'thermostat', status: 'on', temperature: 22 },
-//     { id: 3, name: 'Smart Speaker', type: 'sound', status: 'on', volume: 30 },
-//     { id: 4, name: 'Smart TV', type: 'accessory', status: 'on', volume: 50, channel: 5 },
-//     { id: 5, name: 'Custom Device', type: 'others', status: 'off', description: 'Custom behavior' },
-//     { id: 6, name: 'Smart Fan', type: 'fan', status: 'on', speed: 3 }
-//   ];
-  
 const userDevices = {};
 
   app.get('/devices/:userId', (req, res) => {
@@ -109,54 +154,70 @@ app.get('/devices/:userId/:id', (req, res) => {
 });
 
 app.put('/devices/:userId/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const userId = parseInt(req.params.userId);
-  const { name, status, brightness, temperature, volume, channel, speed } = req.body;
+    console.log("Otrzymane dane w body:", req.body);
 
-  if (!userId || !userDevices[userId]) {
-      return res.status(404).send('User or devices not found.');
-  }
+    const id = parseInt(req.params.id);
+    const userId = parseInt(req.params.userId);
 
-  const device = userDevices[userId].find(d => d.id === id);
-  if (!device) {
-      return res.status(404).send('Device not found.');
-  }
+    if (!userDevices || !userDevices[userId]) {
+        console.error("Błąd: userDevices nie istnieje lub brak urządzeń dla userId:", userId);
+        return res.status(404).send('User or devices not found.');
+    }
 
-  device.name = name || device.name;
-  device.status = status || device.status;
+    const device = userDevices[userId].find(d => d.id === id);
+    if (!device) {
+        console.error("Błąd: Nie znaleziono urządzenia o ID:", id);
+        return res.status(404).send('Device not found.');
+    }
 
-  if (device.type === 'light' && brightness !== undefined) {
-      if (brightness >= 1 && brightness <= 100) {
-          device.brightness = brightness;
-      } else {
-          return res.status(400).send('Brightness must be a number from 1 to 100.');
-      }
-  }
+    const brightnessNum = req.body.brightness !== undefined ? parseInt(req.body.brightness) : undefined;
+    const temperatureNum = req.body.temperature !== undefined ? parseFloat(req.body.temperature) : undefined;
+    const volumeNum = req.body.volume !== undefined ? parseInt(req.body.volume) : undefined;
+    const channelNum = req.body.channel !== undefined ? parseInt(req.body.channel) : undefined;
+    const speedNum = req.body.speed !== undefined ? parseInt(req.body.speed) : undefined;
 
-  if (device.type === 'thermostat' && temperature !== undefined) {
-      device.temperature = temperature;
-  }
+    if (req.body.name !== undefined) {
+        device.name = req.body.name;
+    }
 
-  if (device.type === 'sound' && volume !== undefined) {
-      device.volume = volume;
-  }
+    if (req.body.status !== undefined) {
+        device.status = req.body.status;
+        sendDeviceStatusUpdate(device.id, device.status);
+        console.log(`WebSocket wysyła status: ${device.status} dla urządzenia ID: ${device.id}`);
+    }
 
-  if (device.type === 'accessory') {
-      if (volume !== undefined) device.volume = volume;
-      if (channel !== undefined) device.channel = channel;
-  }
+    if (device.type === 'light' && brightnessNum !== undefined) {
+        if (brightnessNum >= 1 && brightnessNum <= 100) {
+            device.brightness = brightnessNum;
+        } else {
+            return res.status(400).send('Brightness must be a number from 1 to 100.');
+        }
+    }
 
-  if (device.type === 'fan' && speed !== undefined) {
-      if ([1, 2, 3].includes(speed)) {
-          device.speed = speed;
-      } else {
-          return res.status(400).send('Speed must be a number: 1, 2 or 3.');
-      }
-  }
+    if (device.type === 'thermostat' && temperatureNum !== undefined) {
+        device.temperature = temperatureNum;
+    }
 
-  res.json(device);
+    if (device.type === 'sound' && volumeNum !== undefined) {
+        device.volume = volumeNum;
+    }
+
+    if (device.type === 'accessory') {
+        if (volumeNum !== undefined) device.volume = volumeNum;
+        if (channelNum !== undefined) device.channel = channelNum;
+    }
+
+    if (device.type === 'fan' && speedNum !== undefined) {
+        if ([1, 2, 3].includes(speedNum)) {
+            device.speed = speedNum;
+        } else {
+            return res.status(400).send('Speed must be a number: 1, 2 or 3.');
+        }
+    }
+
+    console.log("Urządzenie po aktualizacji:", device);
+    res.json(device);
 });
-
 
   
   
@@ -427,7 +488,10 @@ app.delete('/api/users/:id', (req, res) => {
 
 
 
-app.listen(HTTP_PORT, () => {
-    console.log(`Serwer działa na http://localhost:${HTTP_PORT}`);
-  });
-  
+// app.listen(HTTP_PORT, () => {
+//     console.log(`Serwer działa na http://localhost:${HTTP_PORT}`);
+// });
+
+server.listen(HTTP_PORT, () => {
+    console.log(`Serwer HTTP i WebSocket działa na http://localhost:${HTTP_PORT}`);
+});

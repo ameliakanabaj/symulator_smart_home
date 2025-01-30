@@ -43,6 +43,7 @@
   box-shadow: 0 0 5px rgba(46, 204, 113, 0.5);
 }
 .device-details button {
+  margin-bottom: 10px;
   background-color: #2ecc71;
   color: white;
   font-size: 1rem;
