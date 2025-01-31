@@ -13,45 +13,68 @@ const wss = new WebSocketServer({ server });
 let clients = [];
 
 wss.on('connection', (ws) => {
-    console.log('Nowe połączenie WebSocket');
+    console.log('New connection to WebSocket');
 
     ws.on('message', (message) => {
-        console.log("Nowa wiadomość:", message);  
+        console.log("New message:", message);
 
         try {
             const data = JSON.parse(message);
-            console.log("Parsed data:", data);  
+            console.log("Parsed data:", data);
 
             if (data.type === 'subscribe') {
                 clients.push({ ws, deviceId: data.deviceId });
-                console.log(`Subskrybent dodany dla urządzenia: ${data.deviceId}`);
+                console.log(`Added new subscriber for the device: ${data.deviceId}`);
             }
         } catch (error) {
-            console.error('Błąd parsowania JSON:', error);
+            console.error('Error parsing JSON:', error);
         }
     });
 
     ws.on('close', () => {
         clients = clients.filter(client => client.ws !== ws);
-        console.log('Połączenie WebSocket zamknięte');
+        console.log('WebSocket connection closed');
     });
 
     ws.on('error', (err) => {
-        console.error('Błąd WebSocket:', err);
+        console.error('WebSocket error:', err);
     });
 });
 
-
 function sendDeviceStatusUpdate(deviceId, status) {
-    console.log(`Próba wysłania statusu ${status} dla urządzenia ${deviceId}`);
+    console.log(`Próba wysłania statusu ${status} dla urządzenia ${deviceId}`);//debug
 
     clients.forEach(client => {
         if (parseInt(client.deviceId) === parseInt(deviceId) && client.ws.readyState === WebSocket.OPEN) {
             client.ws.send(JSON.stringify({ deviceId, status }));
-            console.log(`Wysłano status ${status} do urządzenia ${deviceId}`);
+            console.log(`Wysłano status ${status} do urządzenia ${deviceId}`);//debug
         }
     });
 }
+
+function detectDeviceProblem(deviceId) {
+    console.log(`Checking device's techical condition${deviceId}`);
+    
+    setTimeout(() => {
+        const errorNotification = {
+            type: 'deviceError',
+            deviceId: deviceId,
+            message: `There is a problem with the device number ${deviceId}: it needs fixing now!`
+        };
+
+        clients.forEach(client => {
+            if (parseInt(client.deviceId) === parseInt(deviceId) && client.ws.readyState === WebSocket.OPEN) {
+                client.ws.send(JSON.stringify(errorNotification));
+                console.log(`Wysłano powiadomienie o problemie dla urządzenia ${deviceId}`);//debug
+            }
+        });
+    }, 10000); 
+}
+
+setInterval(() => {
+    detectDeviceProblem('1');
+}, 90000); 
+
 
 app.use(express.json());
 app.use(cors());

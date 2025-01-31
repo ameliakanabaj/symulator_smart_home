@@ -10,6 +10,7 @@ export default function Device() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [ws, setWs] = useState(null);  
+    const [deviceError, setDeviceError] = useState(null); 
 
     const updateDevice = (updatedData) => {
         fetch(`http://localhost:3000/devices/${userId}/${id}`, {
@@ -32,7 +33,7 @@ export default function Device() {
     const connectWebSocket = () => {
         const socket = new WebSocket(`ws://localhost:3000`); 
         socket.onopen = () => {
-            console.log("Połączono z WebSocket");
+            console.log("Connected to WebSocket");
             socket.send(JSON.stringify({ type: "subscribe", deviceId: id }));
         };
 
@@ -40,7 +41,13 @@ export default function Device() {
             try {
                 const data = JSON.parse(event.data);
                 if (data.deviceId === id) {
-                    setDevice((prev) => ({ ...prev, status: data.status }));
+                    if (data.status) {
+                        setDevice((prev) => ({ ...prev, status: data.status }));
+                    }
+
+                    if (data.type === 'deviceError') {
+                        setDeviceError(data.message); 
+                    }
                 }
             } catch (error) {
                 console.error("Błąd parsowania wiadomości WebSocket:", error);
@@ -144,6 +151,7 @@ export default function Device() {
 
     return (
         <div className='device-details'>
+             {deviceError && <div className="error-message">{deviceError}</div>}
             <h1>{device.name}</h1>
             <p>Type: {device.type}</p>
             <p>Status: {device.status}</p>
@@ -255,6 +263,7 @@ export default function Device() {
             <button  className='save' onClick={handleDeleteSchedule} disabled={!schedule.timeOn && !schedule.timeOff}>
                 Delete Schedule
             </button>
+
         </div>
     );
 }

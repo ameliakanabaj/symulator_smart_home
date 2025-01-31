@@ -101,4 +101,20 @@
   position: relative;
   left: 12px;
   margin-bottom: 16px;
+}
+
+.error-message {
+  background-color: #ffcccc;
+  color: #d8000c;
+  border: 1px solid #d8000c;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(216, 0, 12, 0.3);
+}
+.error-message::before {
+  content: "⚠️ ";
+  font-size: 1.2em;
 }/*# sourceMappingURL=Device.css.map */
