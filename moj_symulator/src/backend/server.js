@@ -12,52 +12,46 @@ const wss = new WebSocketServer({ server });
 
 let clients = [];
 
-wss.on("connection", (ws) => {
-    console.log("Nowe połączenie WebSocket");
+wss.on('connection', (ws) => {
+    console.log('Nowe połączenie WebSocket');
 
-    ws.on("message", (message) => {
+    ws.on('message', (message) => {
+        console.log("Nowa wiadomość:", message);  
+
         try {
             const data = JSON.parse(message);
-            if (data.type === "subscribe") {
+            console.log("Parsed data:", data);  
+
+            if (data.type === 'subscribe') {
                 clients.push({ ws, deviceId: data.deviceId });
                 console.log(`Subskrybent dodany dla urządzenia: ${data.deviceId}`);
             }
         } catch (error) {
-            console.error("Błąd parsowania JSON:", error);
+            console.error('Błąd parsowania JSON:', error);
         }
     });
 
-    ws.on("close", () => {
+    ws.on('close', () => {
         clients = clients.filter(client => client.ws !== ws);
-        console.log("Połączenie WebSocket zamknięte");
+        console.log('Połączenie WebSocket zamknięte');
     });
 
-    ws.on("error", (err) => {
-        console.error("Błąd WebSocket:", err);
+    ws.on('error', (err) => {
+        console.error('Błąd WebSocket:', err);
     });
 });
 
 
 function sendDeviceStatusUpdate(deviceId, status) {
-    console.log(`📡 Próba wysłania statusu ${status} dla urządzenia ${deviceId}`);
-
-    if (!clients.length) {
-        console.warn("⚠️ Brak połączonych klientów WebSocket.");
-        return;
-    }
+    console.log(`Próba wysłania statusu ${status} dla urządzenia ${deviceId}`);
 
     clients.forEach(client => {
-        if (parseInt(client.deviceId) === parseInt(deviceId)) {
-            if (client.ws.readyState === WebSocket.OPEN) {
-                client.ws.send(JSON.stringify({ deviceId, status }));
-                console.log(`Wysłano status ${status} do urządzenia ${deviceId}`);
-            } else {
-                console.warn(`WebSocket dla urządzenia ${deviceId} jest zamknięty.`);
-            }
+        if (parseInt(client.deviceId) === parseInt(deviceId) && client.ws.readyState === WebSocket.OPEN) {
+            client.ws.send(JSON.stringify({ deviceId, status }));
+            console.log(`Wysłano status ${status} do urządzenia ${deviceId}`);
         }
     });
 }
-
 
 app.use(express.json());
 app.use(cors());

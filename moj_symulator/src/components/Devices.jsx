@@ -14,7 +14,7 @@ export default function Devices() {
         type: 'light',
         status: 'off',
     });
-
+    
     const fetchDevices = async () => {
         try {2  
             const response = await fetch(`http://localhost:3000/devices/${userId}`);

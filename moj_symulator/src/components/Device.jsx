@@ -9,6 +9,7 @@ export default function Device() {
     const [schedule, setSchedule] = useState({ timeOn: '', timeOff: '' });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [ws, setWs] = useState(null);  
 
     const updateDevice = (updatedData) => {
         fetch(`http://localhost:3000/devices/${userId}/${id}`, {
@@ -28,15 +29,14 @@ export default function Device() {
         });
     };
 
-    useEffect(() => {
-        const ws = new WebSocket(`ws://localhost:3000`); 
-    
-        ws.onopen = () => {
+    const connectWebSocket = () => {
+        const socket = new WebSocket(`ws://localhost:3000`); 
+        socket.onopen = () => {
             console.log("Połączono z WebSocket");
-            ws.send(JSON.stringify({ type: "subscribe", deviceId: id }));
+            socket.send(JSON.stringify({ type: "subscribe", deviceId: id }));
         };
-    
-        ws.onmessage = (event) => {
+
+        socket.onmessage = (event) => {
             try {
                 const data = JSON.parse(event.data);
                 if (data.deviceId === id) {
@@ -46,15 +46,24 @@ export default function Device() {
                 console.error("Błąd parsowania wiadomości WebSocket:", error);
             }
         };
-    
-        ws.onerror = (error) => {
+
+        socket.onerror = (error) => {
             console.error("Błąd WebSocket:", error);
         };
-        
-        ws.onclose = () => console.log("Rozłączono z WebSocket");
-    
+
+        socket.onclose = () => {
+            console.log("Rozłączono z WebSocket");
+        };
+
+        setWs(socket);
+    };
+
+    useEffect(() => {
+        connectWebSocket();  
         return () => {
-            ws.close();
+            if (ws) {
+                ws.close();  
+            }
         };
     }, [id]);
 
@@ -71,42 +80,19 @@ export default function Device() {
             });
     }, [id, userId]);
 
-    useEffect(() => {
-        fetch(`http://localhost:3000/schedules/${userId}/${id}`)
-            .then((response) => {
-                if (!response.ok) {
-                    if (response.status === 404) {
-                        console.log('No schedules found for this device.');
-                        return [];
-                    }
-                    throw new Error('Failed to fetch schedules');
-                }
-                return response.json();
-            })
-            .then((data) => {
-                setSchedule(data || []);
-            })
-            .catch(() => {
-                console.error('Could not fetch schedules');
-            });
-    }, [id, userId]);
-
     const toggleStatus = () => {
         const newStatus = device.status === 'on' ? 'off' : 'on';
-    
+
         setDevice({ ...device, status: newStatus });
-    
         updateDevice({ ...device, status: newStatus });
-        
-        const ws = new WebSocket(`ws://localhost:3000`);
-        ws.onopen = () => {
+
+        if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({ type: "updateStatus", deviceId: id, status: newStatus }));
-            ws.close(); 
-        };
-    
+        }
+
         alert(`Device successfully updated: ${newStatus}`);
     };
-    
+
     const handleChange = (field, value) => {
         setDevice({
             ...device,
