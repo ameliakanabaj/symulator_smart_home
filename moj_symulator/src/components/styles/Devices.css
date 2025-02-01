@@ -106,11 +106,44 @@
   border-radius: 8px;
   font-size: 0.9rem;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 .devices ul .device-item button.delete-button:hover {
   background: #c0392b;
+  transform: scale(1.05);
 }
 .devices ul .device-item button.delete-button:active {
+  background: #a93226;
   transform: scale(0.98);
+}
+.devices ul .device-item button.delete-button:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(231, 76, 60, 0.6);
+}
+.devices .last-device {
+  background: #3498db;
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+.devices .last-device:hover {
+  background: #2980b9;
+  transform: scale(1.05);
+}
+.devices .last-device:active {
+  transform: scale(0.98);
+  background: #21618c;
+}
+.devices .last-device:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.6);
 }/*# sourceMappingURL=Devices.css.map */

@@ -6,9 +6,12 @@ import { createServer } from "http";
 import { WebSocketServer } from "ws";
 import https from 'https';
 import fs from 'fs';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 const HTTPS_PORT = 3000;
+
+app.use(cookieParser());
 
 const options = {
     key: fs.readFileSync('privkey.pem'),
@@ -508,12 +511,27 @@ app.delete('/api/users/:id', (req, res) => {
     res.json({ message: 'User deleted successfully', user: deletedUser[0] });
 });
 
+app.post('/set-last-device', (req, res) => {
+    const { device } = req.body;  
 
+    if (!device) {
+        return res.status(400).send('Brak nazwy urządzenia');
+    }
 
+    res.cookie('lastDevice', device, { maxAge: 86400000, httpOnly: false });
+    res.send(`Zapisano urządzenie: ${device}`);
+});
 
-// app.listen(HTTP_PORT, () => {
-//     console.log(`Serwer działa na http://localhost:${HTTP_PORT}`);
-// });
+app.get('/get-last-device', (req, res) => {
+    const lastDevice = req.cookies.lastDevice;  
+
+    if (!lastDevice) {
+        return res.status(404).send('Brak ostatniego urządzenia w ciasteczkach');
+    }
+
+    res.json({ lastDevice });
+});
+
 
 server.listen(HTTPS_PORT, () => {
     console.log(`Serwer HTTPS i WebSocket działa na https://localhost:${HTTPS_PORT}`);

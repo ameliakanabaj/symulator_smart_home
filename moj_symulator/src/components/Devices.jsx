@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import './styles/Devices.css';
 import Header from './Header';
 
@@ -14,9 +15,9 @@ export default function Devices() {
         type: 'light',
         status: 'off',
     });
-    
+
     const fetchDevices = async () => {
-        try {2  
+        try {
             const response = await fetch(`https://localhost:3000/devices/${userId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch devices');
@@ -46,8 +47,6 @@ export default function Devices() {
     };
 
     const handleSearch = async (query) => {
-        console.log(userId); // debug
-    
         setSearchQuery(query);
         if (query.trim() === '') {
             setFilteredDevices(devices);
@@ -65,9 +64,10 @@ export default function Devices() {
             }
         }
     };
-    
+
     const handleDeviceClick = (id) => {
-        navigate(`/device/${userId}/${id}`); 
+        Cookies.set('lastDeviceId', id, { expires: 1 }); 
+        navigate(`/device/${userId}/${id}`);
     };
     
 
@@ -102,6 +102,20 @@ export default function Devices() {
             navigate('/login');
         }
     }, [userId]);
+
+    const getLastUsedDevice = () => {
+        const lastDeviceId = Cookies.get('lastDeviceId');
+        return lastDeviceId;
+    };
+
+    const handleLastDeviceRedirect = () => {
+        const lastDeviceId = getLastUsedDevice();
+        if (lastDeviceId) {
+            navigate(`/device/${userId}/${lastDeviceId}`);
+        } else {
+            console.log('No last device found in cookies');
+        }
+    };
 
     return (
         <>
@@ -144,6 +158,8 @@ export default function Devices() {
                     </select>
                     <button onClick={handleAddDevice}>Add Device</button>
                 </div>
+
+                <button onClick={handleLastDeviceRedirect} className='last-device'>Go to Last Device</button> 
 
                 <ul>
                     {filteredDevices.map((device, index) => (
