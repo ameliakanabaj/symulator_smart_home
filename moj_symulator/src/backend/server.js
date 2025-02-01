@@ -7,6 +7,23 @@ import { WebSocketServer } from "ws";
 import https from 'https';
 import fs from 'fs';
 import cookieParser from 'cookie-parser';
+import winston from 'winston';
+
+const logger = winston.createLogger({
+    level: 'info',  
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.printf(({ timestamp, level, message }) => {
+            return `${timestamp} ${level}: ${message}`;
+        })
+    ),
+    transports: [
+        new winston.transports.Console(),   
+        new winston.transports.File({ filename: 'app.log' }) 
+    ],
+});
+
+// logger.info('Log do pliku');
 
 const app = express();
 const HTTPS_PORT = 3000;
@@ -24,41 +41,41 @@ const wss = new WebSocketServer({ server });
 let clients = [];
 
 wss.on('connection', (ws) => {
-    console.log('New connection to WebSocket');
+    logger.info('New connection to WebSocket');
 
     ws.on('message', (message) => {
-        console.log("New message:", message);
+        logger.info("New message:", message);
 
         try {
             const data = JSON.parse(message);
-            console.log("Parsed data:", data);
+            logger.info("Parsed data:", data);
 
             if (data.type === 'subscribe') {
                 clients.push({ ws, deviceId: data.deviceId });
-                console.log(`Added new subscriber for the device: ${data.deviceId}`);
+                logger.info(`Added new subscriber for the device: ${data.deviceId}`);
             }
         } catch (error) {
-            console.error('Error parsing JSON:', error);
+            logger.error('Error parsing JSON:', error);
         }
     });
 
     ws.on('close', () => {
         clients = clients.filter(client => client.ws !== ws);
-        console.log('WebSocket connection closed');
+        logger.info('WebSocket connection closed');
     });
 
     ws.on('error', (err) => {
-        console.error('WebSocket error:', err);
+        logger.error('WebSocket error:', err);
     });
 });
 
 function sendDeviceStatusUpdate(deviceId, status) {
-    console.log(`Próba wysłania statusu ${status} dla urządzenia ${deviceId}`);//debug
+    logger.info(`Próba wysłania statusu ${status} dla urządzenia ${deviceId}`);//debug
 
     clients.forEach(client => {
         if (parseInt(client.deviceId) === parseInt(deviceId) && client.ws.readyState === WebSocket.OPEN) {
             client.ws.send(JSON.stringify({ deviceId, status }));
-            console.log(`Wysłano status ${status} do urządzenia ${deviceId}`);//debug
+            logger.info(`Wysłano status ${status} do urządzenia ${deviceId}`);//debug
         }
     });
 }
@@ -180,19 +197,19 @@ app.get('/devices/:userId/:id', (req, res) => {
 });
 
 app.put('/devices/:userId/:id', (req, res) => {
-    console.log("Otrzymane dane w body:", req.body);
+    logger.info("Otrzymane dane w body:", req.body);
 
     const id = parseInt(req.params.id);
     const userId = parseInt(req.params.userId);
 
     if (!userDevices || !userDevices[userId]) {
-        console.error("Błąd: userDevices nie istnieje lub brak urządzeń dla userId:", userId);
+        logger.error("Błąd: userDevices nie istnieje lub brak urządzeń dla userId:", userId);
         return res.status(404).send('User or devices not found.');
     }
 
     const device = userDevices[userId].find(d => d.id === id);
     if (!device) {
-        console.error("Błąd: Nie znaleziono urządzenia o ID:", id);
+        logger.error("Błąd: Nie znaleziono urządzenia o ID:", id);
         return res.status(404).send('Device not found.');
     }
 
@@ -209,7 +226,7 @@ app.put('/devices/:userId/:id', (req, res) => {
     if (req.body.status !== undefined) {
         device.status = req.body.status;
         sendDeviceStatusUpdate(device.id, device.status);
-        console.log(`WebSocket wysyła status: ${device.status} dla urządzenia ID: ${device.id}`);
+        logger.info(`WebSocket wysyła status: ${device.status} dla urządzenia ID: ${device.id}`);
     }
 
     if (device.type === 'light' && brightnessNum !== undefined) {
@@ -241,7 +258,7 @@ app.put('/devices/:userId/:id', (req, res) => {
         }
     }
 
-    console.log("Urządzenie po aktualizacji:", device);
+    logger.info("Urządzenie po aktualizacji:", device);
     res.json(device);
 });
 
@@ -268,7 +285,7 @@ app.delete('/devices/:userId/:id', (req, res) => {
   const users = [];
 
   app.post('/api/register', async (req, res) => {
-    console.log('Dane odebrane na backendzie:', req.body);//debug
+    logger.info('Dane odebrane na backendzie:', req.body);//debug
     const { email, password, firstName, lastName, confirmPassword } = req.body;
 
     if (password !== confirmPassword) {
@@ -292,7 +309,7 @@ app.delete('/devices/:userId/:id', (req, res) => {
 
     users.push(newUser);
     userDevices[newUser.id] = []; 
-    console.log('New user:', newUser);//debug
+    logger.info('New user:', newUser);//debug
 
     res.status(201).send({
         message: 'Successfully registered',
@@ -309,7 +326,7 @@ app.delete('/devices/:userId/:id', (req, res) => {
     const { email, password } = req.body;
   
     const user = users.find(user => user.email === email);
-    console.log('Znaleziony użytkownik:', user);//debug
+    logger.info('Znaleziony użytkownik:', user);//debug
     if (!user) {
       return res.status(404).send('Could not find user');
     }
@@ -444,8 +461,8 @@ app.delete('/admins/:email', (req, res) => {
 });
 
 app.get('/api/users', (req, res) => {
-    console.log(users);
-    console.log('Żądanie do /api/users');//debug
+    logger.info(users);
+    logger.info('Żądanie do /api/users');//debug
     if (users.length === 0) {
         return res.status(404).send('No users found');
     }
@@ -534,5 +551,5 @@ app.get('/get-last-device', (req, res) => {
 
 
 server.listen(HTTPS_PORT, () => {
-    console.log(`Serwer HTTPS i WebSocket działa na https://localhost:${HTTPS_PORT}`);
+    logger.info(`Serwer HTTPS i WebSocket działa na https://localhost:${HTTPS_PORT}`);
 });
