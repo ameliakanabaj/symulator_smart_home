@@ -14,7 +14,7 @@ export default function AdminPanel() {
 
     const fetchAdmins = async () => {
         try {
-            const response = await fetch('http://localhost:3000/admins');
+            const response = await fetch('https://localhost:3000/admins');
             const data = await response.json();
 
             if (response.ok) {
@@ -29,7 +29,7 @@ export default function AdminPanel() {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/users');
+            const response = await fetch('https://localhost:3000/api/users');
             const data = await response.json();
 
             if (response.ok) {
@@ -44,7 +44,7 @@ export default function AdminPanel() {
 
     const handleDeleteAdmin = async (email) => {
         try {
-            const response = await fetch(`http://localhost:3000/admins/${email}`, { method: 'DELETE' });
+            const response = await fetch(`https://localhost:3000/admins/${email}`, { method: 'DELETE' });
             if (response.ok) {
                 setAdmins((prevAdmins) => prevAdmins.filter((admin) => admin !== email));
             }
@@ -55,7 +55,7 @@ export default function AdminPanel() {
 
     const handleAddAdmin = async () => {
         try {
-            const response = await fetch('http://localhost:3000/admins', {
+            const response = await fetch('https://localhost:3000/admins', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: newAdminEmail }),
@@ -72,7 +72,7 @@ export default function AdminPanel() {
 
     const handleEditAdmin = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/admins/${adminToEdit}`, {
+            const response = await fetch(`https://localhost:3000/admins/${adminToEdit}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ newEmail: editAdminEmail }),
@@ -90,7 +90,7 @@ export default function AdminPanel() {
 
     const handleDeleteUser = async (id) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/users/${id}`, { method: 'DELETE' });
+            const response = await fetch(`https://localhost:3000/api/users/${id}`, { method: 'DELETE' });
             if (response.ok) {
                 setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
             }
@@ -101,7 +101,7 @@ export default function AdminPanel() {
 
     const handleAddUser = async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/users', {
+            const response = await fetch('https://localhost:3000/api/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newUser),
@@ -118,7 +118,7 @@ export default function AdminPanel() {
 
     const handleEditUser = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/api/users/${editUser.id}`, {
+            const response = await fetch(`https://localhost:3000/api/users/${editUser.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(editUser),

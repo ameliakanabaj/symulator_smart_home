@@ -13,7 +13,7 @@ export default function Device() {
     const [deviceError, setDeviceError] = useState(null); 
 
     const updateDevice = (updatedData) => {
-        fetch(`http://localhost:3000/devices/${userId}/${id}`, {
+        fetch(`https://localhost:3000/devices/${userId}/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -31,7 +31,7 @@ export default function Device() {
     };
 
     const connectWebSocket = () => {
-        const socket = new WebSocket(`ws://localhost:3000`); 
+        const socket = new WebSocket(`wss://localhost:3000`); 
         socket.onopen = () => {
             console.log("Connected to WebSocket");
             socket.send(JSON.stringify({ type: "subscribe", deviceId: id }));
@@ -75,7 +75,7 @@ export default function Device() {
     }, [id]);
 
     useEffect(() => {
-        fetch(`http://localhost:3000/devices/${userId}/${id}`)
+        fetch(`https://localhost:3000/devices/${userId}/${id}`)
             .then((response) => response.json())
             .then((data) => {
                 setDevice(data);
@@ -117,7 +117,7 @@ export default function Device() {
             return;
         }
 
-        fetch(`http://localhost:3000/schedules/${userId}/${id}`, {
+        fetch(`https://localhost:3000/schedules/${userId}/${id}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(schedule),
@@ -131,7 +131,7 @@ export default function Device() {
     };
 
     const handleDeleteSchedule = () => {
-        fetch(`http://localhost:3000/schedules/${userId}/${id}`, {
+        fetch(`https://localhost:3000/schedules/${userId}/${id}`, {
             method: 'DELETE',
         })
             .then(() => {

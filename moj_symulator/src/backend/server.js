@@ -4,10 +4,18 @@ import bcrypt from 'bcrypt';
 import WebSocket from 'ws';
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
+import https from 'https';
+import fs from 'fs';
 
 const app = express();
-const HTTP_PORT = 3000;
-const server = createServer(app);
+const HTTPS_PORT = 3000;
+
+const options = {
+    key: fs.readFileSync('privkey.pem'),
+    cert: fs.readFileSync('cert.pem')
+};
+
+const server = https.createServer(options, app);
 const wss = new WebSocketServer({ server });
 
 let clients = [];
@@ -53,7 +61,6 @@ function sendDeviceStatusUpdate(deviceId, status) {
 }
 
 function detectDeviceProblem(deviceId) {
-    console.log(`Checking device's techical condition${deviceId}`);
     
     setTimeout(() => {
         const errorNotification = {
@@ -65,15 +72,14 @@ function detectDeviceProblem(deviceId) {
         clients.forEach(client => {
             if (parseInt(client.deviceId) === parseInt(deviceId) && client.ws.readyState === WebSocket.OPEN) {
                 client.ws.send(JSON.stringify(errorNotification));
-                console.log(`Wysłano powiadomienie o problemie dla urządzenia ${deviceId}`);//debug
             }
         });
-    }, 10000); 
+    }, 2000); 
 }
 
 setInterval(() => {
     detectDeviceProblem('1');
-}, 90000); 
+}, 2000); 
 
 
 app.use(express.json());
@@ -509,6 +515,6 @@ app.delete('/api/users/:id', (req, res) => {
 //     console.log(`Serwer działa na http://localhost:${HTTP_PORT}`);
 // });
 
-server.listen(HTTP_PORT, () => {
-    console.log(`Serwer HTTP i WebSocket działa na http://localhost:${HTTP_PORT}`);
+server.listen(HTTPS_PORT, () => {
+    console.log(`Serwer HTTPS i WebSocket działa na https://localhost:${HTTPS_PORT}`);
 });

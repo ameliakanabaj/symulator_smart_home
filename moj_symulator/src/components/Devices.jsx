@@ -17,7 +17,7 @@ export default function Devices() {
     
     const fetchDevices = async () => {
         try {2  
-            const response = await fetch(`http://localhost:3000/devices/${userId}`);
+            const response = await fetch(`https://localhost:3000/devices/${userId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch devices');
             }
@@ -31,7 +31,7 @@ export default function Devices() {
 
     const handleDeleteDevice = async (id) => {
         try {
-            const response = await fetch(`http://localhost:3000/devices/${userId}/${id}`, {
+            const response = await fetch(`https://localhost:3000/devices/${userId}/${id}`, {
                 method: 'DELETE',
             });
             if (response.ok) {
@@ -53,7 +53,7 @@ export default function Devices() {
             setFilteredDevices(devices);
         } else {
             try {
-                const response = await fetch(`http://localhost:3000/devices/search/${userId}?query=${encodeURIComponent(query)}`);
+                const response = await fetch(`https://localhost:3000/devices/search/${userId}?query=${encodeURIComponent(query)}`);
                 if (response.ok) {
                     const data = await response.json();
                     setFilteredDevices(data);
@@ -73,7 +73,7 @@ export default function Devices() {
 
     const handleAddDevice = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/devices`, {
+            const response = await fetch(`https://localhost:3000/devices`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
