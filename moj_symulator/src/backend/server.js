@@ -8,6 +8,8 @@ import https from 'https';
 import fs from 'fs';
 import cookieParser from 'cookie-parser';
 import winston from 'winston';
+import Loki from 'lokijs';
+
 
 const logger = winston.createLogger({
     level: 'info',  
@@ -23,7 +25,30 @@ const logger = winston.createLogger({
     ],
 });
 
-// logger.info('Log do pliku');
+const db = new Loki('smart_home.db', {
+    autoload: true,
+    autoloadCallback: () => {
+        usersCollection = db.getCollection('users') || db.addCollection('users');
+        devicesCollection = db.getCollection('devices') || db.addCollection('devices');
+    
+    },
+    autosave: true,
+    autosaveInterval: 4000,
+    serializationMethod: "pretty"
+});
+
+let usersCollection, devicesCollection;
+
+function ensureCollections() {
+    if (!usersCollection || !devicesCollection) {
+        usersCollection = db.getCollection('users') || db.addCollection('users');
+        devicesCollection = db.getCollection('devices') || db.addCollection('devices');
+    }
+}
+
+ensureCollections();
+
+
 
 const app = express();
 const HTTPS_PORT = 3000;
@@ -45,7 +70,7 @@ wss.on('connection', (ws) => {
 
     ws.on('message', (message) => {
         logger.info("New message:", message);
-
+        
         try {
             const data = JSON.parse(message);
             logger.info("Parsed data:", data);
@@ -107,7 +132,7 @@ app.use(cors());
 
 const userDevices = {};
 
-  app.get('/devices/:userId', (req, res) => {
+app.get('/devices/:userId', (req, res) => {
     const userId = parseInt(req.params.userId);
     if (!userId) {
       return res.status(400).send('Lacking userId.');
@@ -281,68 +306,37 @@ app.delete('/devices/:userId/:id', (req, res) => {
   res.json(removedDevice);
 });
 
+function ensureUsersCollection() {
+    if (!usersCollection) {
+        usersCollection = db.getCollection('users') || db.addCollection('users');
+    }
+}
 
-  const users = [];
 
-  app.post('/api/register', async (req, res) => {
-    logger.info('Dane odebrane na backendzie:', req.body);//debug
-    const { email, password, firstName, lastName, confirmPassword } = req.body;
+app.post('/login', (req, res) => {
+    ensureUsersCollection();
 
-    if (password !== confirmPassword) {
-        return res.status(400).send('Passwords do not match.');
+    const { email, password } = req.body;
+    const user = usersCollection.findOne({ email });
+
+    if (!user) {
+        return res.status(401).json({ message: "Nieprawidłowy login lub hasło" });
     }
 
-    const userExists = users.find(user => user.email === email);
-    if (userExists) {
-        return res.status(400).send('There already exists an account linked to that email adress');
+    const isValidPassword = bcrypt.compareSync(password, user.password);
+    if (!isValidPassword) {
+        return res.status(401).json({ message: "Nieprawidłowy login lub hasło" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = {
-        id: users.length + 1,
-        email,
-        password: hashedPassword,
-        firstName,
-        lastName,
-    };
-
-    users.push(newUser);
-    userDevices[newUser.id] = []; 
-    logger.info('New user:', newUser);//debug
-
-    res.status(201).send({
-        message: 'Successfully registered',
-        user: {
-            email: newUser.email,
-            firstName: newUser.firstName,
-            lastName: newUser.lastName,
-        }
+    res.status(200).json({
+        id: user.userId,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
     });
 });
 
 
-  app.post('/api/login', async (req, res) => {
-    const { email, password } = req.body;
-  
-    const user = users.find(user => user.email === email);
-    logger.info('Znaleziony użytkownik:', user);//debug
-    if (!user) {
-      return res.status(404).send('Could not find user');
-    }
-  
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-      return res.status(401).send('Wrong password');
-    }
-  
-    res.status(200).json({
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-    });
-  });
   const schedules = {};
 
   app.get('/schedules/:userId/:id', (req, res) => {

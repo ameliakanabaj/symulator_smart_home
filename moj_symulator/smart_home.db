@@ -1,0 +1,338 @@
+{
+  "filename": "smart_home.db",
+  "collections": [
+    {
+      "name": "users",
+      "data": [
+        {
+          "email": "a@k",
+          "password": "$2b$10$pXYLDfJLhGPIAbD9HhyUt.un3KESEmaCmycKf6WtVs.MAOLAkIdj.",
+          "firstName": "1",
+          "lastName": "1",
+          "meta": {
+            "revision": 0,
+            "created": 1738494459799,
+            "version": 0
+          },
+          "$loki": 1
+        },
+        {
+          "email": "a@c",
+          "password": "$2b$10$dFNiD9Uyl4lyQM8zfLyJauDaAWEZkKY47/CBgnrPbEYsadsgygG7O",
+          "firstName": "1",
+          "lastName": "1",
+          "meta": {
+            "revision": 0,
+            "created": 1738495686845,
+            "version": 0
+          },
+          "$loki": 2
+        },
+        {
+          "email": "a@z",
+          "password": "$2b$10$s2D1.fF4QNko.AhDPhguGebU7ZYAFcRcFifgnB1mNoTyPDQYtH9yW",
+          "firstName": "1",
+          "lastName": "1",
+          "meta": {
+            "revision": 0,
+            "created": 1738496217545,
+            "version": 0
+          },
+          "$loki": 3
+        },
+        {
+          "email": "a@h",
+          "password": "$2b$10$DCHnFaVFLmxUai1xmoBLC.Clbk8SM0BfvQsyMrp8fXhpRSCgZlep6",
+          "firstName": "1",
+          "lastName": "1",
+          "meta": {
+            "revision": 0,
+            "created": 1738502200366,
+            "version": 0
+          },
+          "$loki": 4
+        },
+        {
+          "email": "a@s",
+          "password": "$2b$10$E9mte43k5fddxY4uV4DKtOLLGUTpWzSqzSPQSOSpc5tYhavj8kSaC",
+          "firstName": "1",
+          "lastName": "1",
+          "meta": {
+            "revision": 0,
+            "created": 1738502973155,
+            "version": 0
+          },
+          "$loki": 5
+        },
+        {
+          "email": "a@l",
+          "password": "$2b$10$lDhCN03PFk9OB8wj1/S2xurVQraONnUkOkfzBUXn54IY7ESvzrZeW",
+          "firstName": "1",
+          "lastName": "1",
+          "userId": 1738503355504,
+          "meta": {
+            "revision": 0,
+            "created": 1738503355504,
+            "version": 0
+          },
+          "$loki": 6
+        },
+        {
+          "email": "a@t",
+          "password": "$2b$10$LxZc3igHv1d1xLFRJheSLej2le8mRVuxVWqYpBccX.roAW4ohzC4K",
+          "firstName": "1",
+          "lastName": "1",
+          "userId": 1738503566485,
+          "meta": {
+            "revision": 0,
+            "created": 1738503566485,
+            "version": 0
+          },
+          "$loki": 7
+        },
+        {
+          "email": "b@a",
+          "password": "$2b$10$e/qB7uLX.0HcPa/VmNBO4.IjEA7WyQ8t..WRzcmDgYXgruE645Yby",
+          "firstName": "1",
+          "lastName": "1",
+          "userId": 1738504073322,
+          "meta": {
+            "revision": 0,
+            "created": 1738504073322,
+            "version": 0
+          },
+          "$loki": 8
+        },
+        {
+          "email": "b@b",
+          "password": "$2b$10$s.Z.sMsfX7Ndi.mdL5cby.Wz.wxrc4rU8gRG5az5fj9MDbCIbZbo6",
+          "firstName": "1",
+          "lastName": "1",
+          "userId": 1738504908009,
+          "meta": {
+            "revision": 0,
+            "created": 1738504908009,
+            "version": 0
+          },
+          "$loki": 9
+        }
+      ],
+      "idIndex": null,
+      "binaryIndices": {},
+      "constraints": null,
+      "uniqueNames": [],
+      "transforms": {},
+      "objType": "users",
+      "dirty": false,
+      "cachedIndex": null,
+      "cachedBinaryIndex": null,
+      "cachedData": null,
+      "adaptiveBinaryIndices": true,
+      "transactional": false,
+      "cloneObjects": false,
+      "cloneMethod": "parse-stringify",
+      "asyncListeners": false,
+      "disableMeta": false,
+      "disableChangesApi": true,
+      "disableDeltaChangesApi": true,
+      "autoupdate": false,
+      "serializableIndices": true,
+      "disableFreeze": true,
+      "ttl": null,
+      "maxId": 9,
+      "DynamicViews": [],
+      "events": {
+        "insert": [],
+        "update": [],
+        "pre-insert": [],
+        "pre-update": [],
+        "close": [],
+        "flushbuffer": [],
+        "error": [],
+        "delete": [
+          null
+        ],
+        "warning": [
+          null
+        ]
+      },
+      "changes": [],
+      "dirtyIds": []
+    },
+    {
+      "name": "devices",
+      "data": [
+        {
+          "id": 1738496318640,
+          "userId": "undefined",
+          "name": "ciach",
+          "type": "light",
+          "status": "off",
+          "brightness": 50,
+          "meta": {
+            "revision": 0,
+            "created": 1738496318640,
+            "version": 0
+          },
+          "$loki": 1
+        },
+        {
+          "id": 1738501895512,
+          "userId": "undefined",
+          "name": "jalla",
+          "type": "light",
+          "status": "off",
+          "brightness": 50,
+          "meta": {
+            "revision": 0,
+            "created": 1738501895513,
+            "version": 0
+          },
+          "$loki": 2
+        },
+        {
+          "id": 1738502298092,
+          "userId": "undefined",
+          "name": "jallqa",
+          "type": "light",
+          "status": "off",
+          "brightness": 50,
+          "meta": {
+            "revision": 0,
+            "created": 1738502298093,
+            "version": 0
+          },
+          "$loki": 3
+        },
+        {
+          "id": 1738502316464,
+          "userId": "undefined",
+          "name": "jalla",
+          "type": "light",
+          "status": "off",
+          "brightness": 50,
+          "meta": {
+            "revision": 0,
+            "created": 1738502316464,
+            "version": 0
+          },
+          "$loki": 4
+        },
+        {
+          "id": 1738504091726,
+          "userId": "1738504073322",
+          "name": "jalla",
+          "type": "light",
+          "status": "off",
+          "brightness": 50,
+          "meta": {
+            "revision": 0,
+            "created": 1738504091726,
+            "version": 0
+          },
+          "$loki": 5
+        },
+        {
+          "id": 1738504562449,
+          "userId": "1738504073322",
+          "name": "aaa",
+          "type": "light",
+          "status": "off",
+          "brightness": 50,
+          "meta": {
+            "revision": 0,
+            "created": 1738504562450,
+            "version": 0
+          },
+          "$loki": 6
+        },
+        {
+          "id": 1738504952307,
+          "userId": "1738504908009",
+          "name": "",
+          "type": "light",
+          "status": "off",
+          "brightness": 50,
+          "meta": {
+            "revision": 0,
+            "created": 1738504952307,
+            "version": 0
+          },
+          "$loki": 7
+        }
+      ],
+      "idIndex": null,
+      "binaryIndices": {},
+      "constraints": null,
+      "uniqueNames": [],
+      "transforms": {},
+      "objType": "devices",
+      "dirty": false,
+      "cachedIndex": null,
+      "cachedBinaryIndex": null,
+      "cachedData": null,
+      "adaptiveBinaryIndices": true,
+      "transactional": false,
+      "cloneObjects": false,
+      "cloneMethod": "parse-stringify",
+      "asyncListeners": false,
+      "disableMeta": false,
+      "disableChangesApi": true,
+      "disableDeltaChangesApi": true,
+      "autoupdate": false,
+      "serializableIndices": true,
+      "disableFreeze": true,
+      "ttl": null,
+      "maxId": 7,
+      "DynamicViews": [],
+      "events": {
+        "insert": [],
+        "update": [],
+        "pre-insert": [],
+        "pre-update": [],
+        "close": [],
+        "flushbuffer": [],
+        "error": [],
+        "delete": [
+          null
+        ],
+        "warning": [
+          null
+        ]
+      },
+      "changes": [],
+      "dirtyIds": []
+    }
+  ],
+  "databaseVersion": 1.5,
+  "engineVersion": 1.5,
+  "autosave": true,
+  "autosaveInterval": 4000,
+  "autosaveHandle": null,
+  "throttledSaves": true,
+  "options": {
+    "autoload": true,
+    "autosave": true,
+    "autosaveInterval": 4000,
+    "serializationMethod": "pretty",
+    "destructureDelimiter": "$<\n",
+    "recursiveWait": true,
+    "recursiveWaitLimit": false,
+    "recursiveWaitLimitDuration": 2000,
+    "started": 1738504896381
+  },
+  "persistenceMethod": "fs",
+  "persistenceAdapter": null,
+  "verbose": false,
+  "events": {
+    "init": [
+      null
+    ],
+    "loaded": [],
+    "flushChanges": [],
+    "close": [],
+    "changes": [],
+    "warning": []
+  },
+  "ENV": "NODEJS"
+}

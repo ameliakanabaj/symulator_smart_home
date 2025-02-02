@@ -39,7 +39,7 @@ export default function Login() {
         const payload = { email, password };
 
         try {
-            const response = await fetch('https://localhost:3000/api/login', {
+            const response = await fetch('https://localhost:3000/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ export default function Login() {
             if (response.ok) {
                 console.log('Logged in successfully:', data);
                 if (admins.includes(data.email)) {
-                    console.log("admin");//debug
+                    console.log("admin");
                     navigate("/admin-panel");
                 } else {
                     navigate(`/devices/${data.id}`);
