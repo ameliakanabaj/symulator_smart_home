@@ -144,9 +144,9 @@ app.get('/devices/:userId', (req, res) => {
     }
 
     res.json(result);
-  });
+});
 
-  app.get('/devices/search/:userId', (req, res) => {
+app.get('/devices/search/:userId', (req, res) => {
     const { query } = req.query; 
     const { userId } = req.params; 
 
@@ -189,7 +189,7 @@ app.get('/devices/:userId/:id', (req, res) => {
 });
 
 
-  app.post('/devices', (req, res) => {
+app.post('/devices', (req, res) => {
     const { userId, name, type, status, brightness, temperature, volume, channel, description, speed } = req.body;
 
     if (!userId) {
@@ -306,10 +306,9 @@ app.delete('/devices/:userId/:id', (req, res) => {
   res.json(removedDevice);
 });
 
-const users = [];
 
-  app.post('/api/register', async (req, res) => {
-    const { email, password, firstName, lastName, confirmPassword } = req.body;
+app.post('/api/register', async (req, res) => {
+    const { email, password, firstName, lastName, confirmPassword, role = 'user' } = req.body;
 
     if (password !== confirmPassword) {
         return res.status(400).send('Passwords do not match.');
@@ -320,7 +319,6 @@ const users = [];
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const userId = Date.now(); 
     
     const newUser = usersCollection.insert({
@@ -329,6 +327,7 @@ const users = [];
         firstName,
         lastName,
         userId,
+        role,
     });
 
     db.saveDatabase(); 
@@ -340,9 +339,11 @@ const users = [];
             firstName: newUser.firstName,
             lastName: newUser.lastName,
             userId: newUser.userId, 
+            role: newUser.role, 
         }
     });
 });
+
 
 function ensureUsersCollection() {
     if (!usersCollection) {
@@ -358,12 +359,12 @@ app.post('/login', (req, res) => {
     const user = usersCollection.findOne({ email });
 
     if (!user) {
-        return res.status(401).json({ message: "Nieprawidłowy login lub hasło" });
+        return res.status(401).json({ message: "Wrong email or password" });
     }
 
     const isValidPassword = bcrypt.compareSync(password, user.password);
     if (!isValidPassword) {
-        return res.status(401).json({ message: "Nieprawidłowy login lub hasło" });
+        return res.status(401).json({ message: "Wrong email or password" });
     }
 
     res.status(200).json({
@@ -371,13 +372,13 @@ app.post('/login', (req, res) => {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
+        role: user.role, 
     });
 });
 
+const schedules = {};
 
-  const schedules = {};
-
-  app.get('/schedules/:userId/:id', (req, res) => {
+app.get('/schedules/:userId/:id', (req, res) => {
       const userId = req.params.userId;
       const id = req.params.id;
   
@@ -386,47 +387,28 @@ app.post('/login', (req, res) => {
       }
   
       res.json(schedules[userId][id]);
-  });
+});
   
-  app.post('/schedules/:userId/:id', (req, res) => {
-      const { userId, id } = req.params;
-      const { timeOn, timeOff } = req.body;
-  
-      if (!timeOn || !timeOff) {
-          return res.status(400).json({ message: 'Missing timeOn or timeOff.' });
-      }
-  
-      if (!schedules[userId]) {
-          schedules[userId] = {};
-      }
-  
-      schedules[userId][id] = { timeOn, timeOff };
-  
-      res.status(201).json({
-          message: 'Schedule created or updated successfully.',
-          schedule: schedules[userId][id],
-      });
-  });
-  
-  // app.put('/schedules/:userId/:id', (req, res) => {
-  //     const { userId, id } = req.params;
-  //     const { timeOn, timeOff } = req.body;
-  
-  //     if (!schedules[userId] || !schedules[userId][id]) {
-  //         return res.status(404).json({ message: "No schedule found for this device." });
-  //     }
-  
-  //     schedules[userId][id] = {
-  //         timeOn: timeOn || schedules[userId][id].timeOn,
-  //         timeOff: timeOff || schedules[userId][id].timeOff,
-  //     };
-  
-  //     res.json({
-  //         message: 'Schedule updated successfully.',
-  //         schedule: schedules[userId][id],
-  //     });
-  // });
-  
+app.post('/schedules/:userId/:id', (req, res) => {
+    const { userId, id } = req.params;
+    const { timeOn, timeOff } = req.body;
+
+    if (!timeOn || !timeOff) {
+        return res.status(400).json({ message: 'Missing timeOn or timeOff.' });
+    }
+
+    if (!schedules[userId]) {
+        schedules[userId] = {};
+    }
+
+    schedules[userId][id] = { timeOn, timeOff };
+
+    res.status(201).json({
+        message: 'Schedule created or updated successfully.',
+        schedule: schedules[userId][id],
+    });
+});
+
 app.delete('/schedules/:userId/:id', (req, res) => {
     const { userId, id } = req.params;
 
@@ -437,12 +419,10 @@ app.delete('/schedules/:userId/:id', (req, res) => {
     delete schedules[userId][id]; 
 
     res.json({ message: 'Schedule deleted successfully.' });
-  });
-  
+});
 
-  const admins = ['admin@smarthome.com'];
-
-  app.get('/admins', (req, res) => {
+app.get('/admins', (req, res) => {
+    const admins = usersCollection.find({ role: 'admin' });
     res.json(admins);
 });
 
@@ -453,112 +433,139 @@ app.post('/admins', (req, res) => {
         return res.status(400).json({ error: 'Email is required' });
     }
 
-    if (admins.includes(email)) {
-        return res.status(400).json({ error: 'Admin already exists' });
+    const user = usersCollection.findOne({ email });
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
     }
 
-    admins.push(email);
-    res.status(201).json({ message: 'Admin added', admins });
+    if (user.role === 'admin') {
+        return res.status(400).json({ error: 'User is already an admin' });
+    }
+
+    user.role = 'admin';
+    db.saveDatabase(); 
+
+    const admins = usersCollection.find({ role: 'admin' });
+
+    res.status(201).json({ message: 'User is now an admin', admins });
 });
 
-app.put('/admins/:oldEmail', (req, res) => {
-    const { oldEmail } = req.params;
+
+app.put('/admins/:email', (req, res) => {
+    const { email } = req.params;
     const { newEmail } = req.body;
 
     if (!newEmail) {
         return res.status(400).json({ error: 'New email is required' });
     }
 
-    const index = admins.indexOf(oldEmail);
+    const user = usersCollection.findOne({ email });
 
-    if (index === -1) {
-        return res.status(404).json({ error: 'Admin not found' });
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
     }
 
-    admins[index] = newEmail;
-    res.json({ message: 'Admin updated', admins });
+    user.email = newEmail;
+    db.saveDatabase();
+
+    res.json({ message: 'Admin email updated', user });
 });
 
 app.delete('/admins/:email', (req, res) => {
     const { email } = req.params;
+    const user = usersCollection.findOne({ email });
 
-    const index = admins.indexOf(email);
-
-    if (index === -1) {
-        return res.status(404).json({ error: 'Admin not found' });
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
     }
 
-    admins.splice(index, 1);
-    res.json({ message: 'Admin deleted', admins });
+    if (user.role !== 'admin') {
+        return res.status(400).json({ error: 'User is not an admin' });
+    }
+
+    user.role = 'user'; 
+    db.saveDatabase();
+
+    res.json({ message: 'Admin rights removed', user });
 });
 
 app.get('/api/users', (req, res) => {
-    logger.info(users);
-    logger.info('Żądanie do /api/users');//debug
-    if (users.length === 0) {
+    const usersInfo = usersCollection.find();
+    console.log(usersInfo);
+    if (usersInfo.length === 0) {
         return res.status(404).send('No users found');
     }
-  
-    const usersInfo = users.map(user => ({
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-    }));
-  
+
     res.status(200).json(usersInfo);
 });
 
-app.post('/api/users', (req, res) => {
-    const { id, email, firstName, lastName } = req.body;
+app.post('/api/users', async (req, res) => {
+    const { userId, email, firstName, lastName, password } = req.body;
 
-    if (!id || !email || !firstName || !lastName) {
-        return res.status(400).json({ error: 'All fields (id, email, firstName, lastName) are required' });
+    if (!userId || !email || !firstName || !lastName || !password) {
+        return res.status(400).json({ error: 'All fields (id, email, firstName, lastName, password) are required' });
     }
 
-    const userExists = users.some(user => user.id === id || user.email === email);
+    const userExists = usersCollection.findOne({ userId }) || usersCollection.findOne({ email });
     if (userExists) {
         return res.status(400).json({ error: 'User with this ID or email already exists' });
     }
 
-    const newUser = { id, email, firstName, lastName };
-    users.push(newUser);
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10); 
 
-    res.status(201).json({ message: 'User added successfully', user: newUser });
+        const newUser = { userId, email, firstName, lastName, password: hashedPassword };
+        usersCollection.insert(newUser);
+        db.saveDatabase();
+
+        res.status(201).json({ message: 'User added successfully', user: { userId, email, firstName, lastName } });
+    } catch (error) {
+        res.status(500).json({ error: 'Error while hashing password' });
+    }
 });
+
 
 app.put('/api/users/:id', (req, res) => {
     const { id } = req.params;
+    const userId = parseInt(id, 10);
     const { email, firstName, lastName } = req.body;
 
     if (!email && !firstName && !lastName) {
         return res.status(400).json({ error: 'At least one field (email, firstName, or lastName) is required to update' });
     }
 
-    const userIndex = users.findIndex(user => user.id === id);
-    if (userIndex === -1) {
+    const user = usersCollection.findOne({ userId });
+    if (!user) {
         return res.status(404).json({ error: 'User not found' });
     }
 
-    if (email) users[userIndex].email = email;
-    if (firstName) users[userIndex].firstName = firstName;
-    if (lastName) users[userIndex].lastName = lastName;
+    if (email) user.email = email;
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
 
-    res.json({ message: 'User updated successfully', user: users[userIndex] });
+    db.saveDatabase();
+
+    res.json({ message: 'User updated successfully', user });
 });
+
 
 app.delete('/api/users/:id', (req, res) => {
     const { id } = req.params;
 
-    const userIndex = users.findIndex(user => user.id === id);
-    if (userIndex === -1) {
+    const userId = parseInt(id, 10);
+    
+    const user = usersCollection.findOne({ userId });
+    if (!user) {
         return res.status(404).json({ error: 'User not found' });
     }
 
-    const deletedUser = users.splice(userIndex, 1);
+    usersCollection.remove(user);
+    db.saveDatabase();
 
-    res.json({ message: 'User deleted successfully', user: deletedUser[0] });
+    res.json({ message: 'User deleted successfully', user });
 });
+
+
 
 app.post('/set-last-device', (req, res) => {
     const { device } = req.body;  
@@ -580,6 +587,7 @@ app.get('/get-last-device', (req, res) => {
 
     res.json({ lastDevice });
 });
+
 
 
 server.listen(HTTPS_PORT, () => {

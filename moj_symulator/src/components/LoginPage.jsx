@@ -12,13 +12,12 @@ export default function Login() {
     
     const fetchAdmins = async () => {
         try {
-            const response = await fetch('https://localhost:3000/admins')
-
+            const response = await fetch('https://localhost:3000/admins');
             const data = await response.json();
 
             if (response.ok) {
-                console.log('Fetched admins:', data);//debug
-                setAdmins(data);
+                console.log('Fetched admins:', data); 
+                setAdmins(data); 
             } else {
                 setError(data.message || 'Failed to fetch admins');
             }
@@ -51,8 +50,8 @@ export default function Login() {
 
             if (response.ok) {
                 console.log('Logged in successfully:', data);
-                if (admins.includes(data.email)) {
-                    console.log("admin");
+                if (admins.some(admin => admin.email === data.email)) {
+                    console.log('Redirecting to admin panel...');
                     navigate("/admin-panel");
                 } else {
                     navigate(`/devices/${data.id}`);

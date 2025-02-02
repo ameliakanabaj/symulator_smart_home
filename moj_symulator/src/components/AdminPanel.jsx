@@ -7,10 +7,10 @@ export default function AdminPanel() {
     const [newAdminEmail, setNewAdminEmail] = useState('');
     const [editAdminEmail, setEditAdminEmail] = useState('');
     const [adminToEdit, setAdminToEdit] = useState(null);
-
     const [users, setUsers] = useState([]);
-    const [newUser, setNewUser] = useState({ id: '', email: '', firstName: '', lastName: '' });
+    const [newUser, setNewUser] = useState({ userId: '', email: '', firstName: '', lastName: '' });
     const [editUser, setEditUser] = useState(null);
+    const [error, setError] = useState("");
 
     const fetchAdmins = async () => {
         try {
@@ -42,11 +42,12 @@ export default function AdminPanel() {
         }
     };
 
-    const handleDeleteAdmin = async (email) => {
+    const handleDeleteAdmin = async (admin) => {
         try {
-            const response = await fetch(`https://localhost:3000/admins/${email}`, { method: 'DELETE' });
+            const response = await fetch(`https://localhost:3000/admins/${admin.email}`, { method: 'DELETE' });
             if (response.ok) {
-                setAdmins((prevAdmins) => prevAdmins.filter((admin) => admin !== email));
+                setAdmins((prevAdmins) => prevAdmins.filter((a) => a.email !== admin.email));
+                setUsers([...users, admin]);
             }
         } catch (error) {
             console.log('Error while deleting admin:', error);
@@ -63,7 +64,10 @@ export default function AdminPanel() {
             if (response.ok) {
                 const data = await response.json();
                 setAdmins(data.admins);
+                setUsers((prevUsers) => prevUsers.filter((u) => u.email !== newAdminEmail));
                 setNewAdminEmail('');
+            } else {
+                setError("No user with this email");
             }
         } catch (error) {
             console.log('Error while adding admin:', error);
@@ -79,7 +83,11 @@ export default function AdminPanel() {
             });
             if (response.ok) {
                 const data = await response.json();
-                setAdmins(data.admins);
+                setAdmins((prevAdmins) =>
+                    prevAdmins.map((admin) =>
+                        admin.email === adminToEdit ? { ...admin, email: editAdminEmail } : admin
+                    )
+                );
                 setAdminToEdit(null);
                 setEditAdminEmail('');
             }
@@ -90,50 +98,85 @@ export default function AdminPanel() {
 
     const handleDeleteUser = async (id) => {
         try {
-            const response = await fetch(`https://localhost:3000/api/users/${id}`, { method: 'DELETE' });
-            if (response.ok) {
-                setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+            if (isNaN(id)) {
+                console.error('Invalid user ID');
+                return;
             }
+    
+            const response = await fetch(`https://localhost:3000/api/users/${id}`, { method: 'DELETE' });
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.log('Error while deleting user:', errorData);
+                return;
+            }
+    
+            const data = await response.json();
+            setUsers((prevUsers) => prevUsers.filter((user) => user.userId !== id));
+    
         } catch (error) {
             console.log('Error while deleting user:', error);
         }
     };
+    
 
     const handleAddUser = async () => {
+        const userId = parseInt(newUser.userId, 10); 
+
+        if (isNaN(userId)) {
+            console.error('User ID must be an integer');
+            return;
+        }
+
         try {
             const response = await fetch('https://localhost:3000/api/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newUser),
+                body: JSON.stringify({ ...newUser, userId: userId }),
             });
+    
             if (response.ok) {
                 const data = await response.json();
-                setUsers((prevUsers) => [...prevUsers, data.user]);
-                setNewUser({ id: '', email: '', firstName: '', lastName: '' });
+                setUsers((prevUsers) => [...prevUsers, data.user]); 
+                setNewUser({ userId: '', email: '', firstName: '', lastName: '', password: '' });
+            } else {
+                const errorData = await response.json();
+                console.error('Error adding user:', errorData.error);
             }
         } catch (error) {
             console.log('Error while adding user:', error);
         }
-    };
+    };    
 
     const handleEditUser = async () => {
         try {
-            const response = await fetch(`https://localhost:3000/api/users/${editUser.id}`, {
+            const updatedUserData = {};
+    
+            if (editUser.email) updatedUserData.email = editUser.email;
+            if (editUser.firstName) updatedUserData.firstName = editUser.firstName;
+            if (editUser.lastName) updatedUserData.lastName = editUser.lastName;
+    
+            const response = await fetch(`https://localhost:3000/api/users/${editUser.userId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(editUser),
+                body: JSON.stringify(updatedUserData),
             });
+    
             if (response.ok) {
                 const data = await response.json();
                 setUsers((prevUsers) =>
-                    prevUsers.map((user) => (user.id === editUser.id ? data.user : user))
+                    prevUsers.map((user) => (user.userId === editUser.userId ? data.user : user))
                 );
-                setEditUser(null);
+                setEditUser(null); 
+            } else {
+                const errorData = await response.json();
+                console.log('Error while editing user:', errorData);
             }
         } catch (error) {
             console.log('Error while editing user:', error);
         }
     };
+    
 
     useEffect(() => {
         fetchAdmins();
@@ -148,12 +191,13 @@ export default function AdminPanel() {
                 <ul>
                     {admins.map((admin, index) => (
                         <li key={index}>
-                            {admin}
+                            {admin.email}
                             <button onClick={() => handleDeleteAdmin(admin)}>Delete</button>
-                            <button onClick={() => setAdminToEdit(admin)}>Edit</button>
+                            <button onClick={() => setAdminToEdit(admin.email)}>Edit</button>
                         </li>
                     ))}
                 </ul>
+                {error && (<div className='error'>{error}</div>)}
                 <input
                     type="email"
                     placeholder="New admin email"
@@ -179,10 +223,11 @@ export default function AdminPanel() {
             <div className="section">
                 <h2>Users</h2>
                 <ul>
-                    {users.map((user) => (
-                        <li key={user.id}>
+                    {users.map((user, index) => (
+                        <li key={index}>
+
                             {user.email} - {user.firstName} {user.lastName}
-                            <button onClick={() => handleDeleteUser(user.id)}>Delete</button>
+                            <button onClick={() => handleDeleteUser(user.userId)}>Delete</button>
                             <button onClick={() => setEditUser(user)}>Edit</button>
                         </li>
                     ))}
@@ -191,8 +236,8 @@ export default function AdminPanel() {
                     <input
                         type="text"
                         placeholder="ID"
-                        value={newUser.id}
-                        onChange={(e) => setNewUser({ ...newUser, id: e.target.value })}
+                        value={newUser.userId}
+                        onChange={(e) => setNewUser({ ...newUser, userId: e.target.value })}
                     />
                     <input
                         type="email"
@@ -212,9 +257,14 @@ export default function AdminPanel() {
                         value={newUser.lastName}
                         onChange={(e) => setNewUser({ ...newUser, lastName: e.target.value })}
                     />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={newUser.password}
+                        onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                    />
                     <button onClick={handleAddUser}>Add User</button>
                 </div>
-
                 {editUser && (
                     <form onSubmit={(e) => { e.preventDefault(); handleEditUser(); }}>
                         <h3>Edit User</h3>

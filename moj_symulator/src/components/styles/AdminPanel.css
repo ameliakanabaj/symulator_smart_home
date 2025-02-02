@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .admin-panel {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -128,4 +129,22 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 16px;
+}
+.admin-panel .error {
+  background-color: #ffe5e5;
+  border: 1px solid #ff4d4d;
+  color: #d8000c;
+  padding: 10px 15px;
+  width: 300px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+.admin-panel .error::before {
+  content: "⚠️";
+  font-size: 18px;
 }/*# sourceMappingURL=AdminPanel.css.map */

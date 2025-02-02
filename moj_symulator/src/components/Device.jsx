@@ -12,6 +12,23 @@ export default function Device() {
     const [ws, setWs] = useState(null);  
     const [deviceError, setDeviceError] = useState(null); 
 
+    useEffect(() => {
+        fetch(`https://localhost:3000/schedules/${userId}/${id}`)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Could not fetch schedule');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                setSchedule(data);  
+            })
+            .catch(() => {
+                setSchedule({ timeOn: '', timeOff: '' }); 
+            });
+    }, [id, userId]);
+    
+
     const updateDevice = (updatedData) => {
         fetch(`https://localhost:3000/devices/${userId}/${id}`, {
             method: 'PUT',

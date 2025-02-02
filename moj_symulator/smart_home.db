@@ -5,70 +5,10 @@
       "name": "users",
       "data": [
         {
-          "email": "a@k",
-          "password": "$2b$10$pXYLDfJLhGPIAbD9HhyUt.un3KESEmaCmycKf6WtVs.MAOLAkIdj.",
-          "firstName": "1",
-          "lastName": "1",
-          "meta": {
-            "revision": 0,
-            "created": 1738494459799,
-            "version": 0
-          },
-          "$loki": 1
-        },
-        {
-          "email": "a@c",
-          "password": "$2b$10$dFNiD9Uyl4lyQM8zfLyJauDaAWEZkKY47/CBgnrPbEYsadsgygG7O",
-          "firstName": "1",
-          "lastName": "1",
-          "meta": {
-            "revision": 0,
-            "created": 1738495686845,
-            "version": 0
-          },
-          "$loki": 2
-        },
-        {
-          "email": "a@z",
-          "password": "$2b$10$s2D1.fF4QNko.AhDPhguGebU7ZYAFcRcFifgnB1mNoTyPDQYtH9yW",
-          "firstName": "1",
-          "lastName": "1",
-          "meta": {
-            "revision": 0,
-            "created": 1738496217545,
-            "version": 0
-          },
-          "$loki": 3
-        },
-        {
-          "email": "a@h",
-          "password": "$2b$10$DCHnFaVFLmxUai1xmoBLC.Clbk8SM0BfvQsyMrp8fXhpRSCgZlep6",
-          "firstName": "1",
-          "lastName": "1",
-          "meta": {
-            "revision": 0,
-            "created": 1738502200366,
-            "version": 0
-          },
-          "$loki": 4
-        },
-        {
-          "email": "a@s",
-          "password": "$2b$10$E9mte43k5fddxY4uV4DKtOLLGUTpWzSqzSPQSOSpc5tYhavj8kSaC",
-          "firstName": "1",
-          "lastName": "1",
-          "meta": {
-            "revision": 0,
-            "created": 1738502973155,
-            "version": 0
-          },
-          "$loki": 5
-        },
-        {
-          "email": "a@l",
+          "email": "alicja.cegla@wp.pl",
           "password": "$2b$10$lDhCN03PFk9OB8wj1/S2xurVQraONnUkOkfzBUXn54IY7ESvzrZeW",
-          "firstName": "1",
-          "lastName": "1",
+          "firstName": "Alicja",
+          "lastName": "Cegła",
           "userId": 1738503355504,
           "meta": {
             "revision": 0,
@@ -78,69 +18,59 @@
           "$loki": 6
         },
         {
-          "email": "a@t",
-          "password": "$2b$10$LxZc3igHv1d1xLFRJheSLej2le8mRVuxVWqYpBccX.roAW4ohzC4K",
-          "firstName": "1",
-          "lastName": "1",
-          "userId": 1738503566485,
-          "meta": {
-            "revision": 0,
-            "created": 1738503566485,
-            "version": 0
-          },
-          "$loki": 7
-        },
-        {
-          "email": "b@a",
-          "password": "$2b$10$e/qB7uLX.0HcPa/VmNBO4.IjEA7WyQ8t..WRzcmDgYXgruE645Yby",
-          "firstName": "1",
-          "lastName": "1",
-          "userId": 1738504073322,
-          "meta": {
-            "revision": 0,
-            "created": 1738504073322,
-            "version": 0
-          },
-          "$loki": 8
-        },
-        {
-          "email": "b@b",
-          "password": "$2b$10$s.Z.sMsfX7Ndi.mdL5cby.Wz.wxrc4rU8gRG5az5fj9MDbCIbZbo6",
-          "firstName": "1",
-          "lastName": "1",
-          "userId": 1738504908009,
-          "meta": {
-            "revision": 0,
-            "created": 1738504908009,
-            "version": 0
-          },
-          "$loki": 9
-        },
-        {
-          "email": "a@kk",
-          "password": "$2b$10$L0PEMDAiM5lp4dkN0XIqtuPIfkib7OhSNgM/9lKwBmD0hUbC8HLNy",
-          "firstName": "1",
-          "lastName": "1",
-          "userId": 1738506663798,
-          "meta": {
-            "revision": 0,
-            "created": 1738506663798,
-            "version": 0
-          },
-          "$loki": 10
-        },
-        {
           "email": "admin@smarthome.com",
-          "password": "$2b$10$6.kuQdI2zHdbCPEi/mfGs.VuZukrlWdyyeRfPGNFBwjNz1Paq.8da",
-          "firstName": "1",
-          "lastName": "11",
-          "userId": 1738506693097,
+          "password": "$2b$10$w0RtSUJ8TwLiPk6KLu0FcuFdgIJerAdqGdyjnLTWOY3xnT7KGVcMm",
+          "firstName": "Admin",
+          "lastName": "Admin",
+          "userId": 1738531498363,
+          "role": "admin",
           "meta": {
             "revision": 0,
-            "created": 1738506693097,
+            "created": 1738531498363,
             "version": 0
           },
-          "$loki": 11
+          "$loki": 21
+        },
+        {
+          "email": "krysia.wojt@onet.pl",
+          "password": "$2b$10$6v5Fh60Ye345/vxHLXsj..nUxE9HAQB8djKs8yHaOgz6ifaTacNJu",
+          "firstName": "Krystyna",
+          "lastName": "Wójt",
+          "userId": 1738531853663,
+          "role": "user",
+          "meta": {
+            "revision": 0,
+            "created": 1738531853663,
+            "version": 0
+          },
+          "$loki": 23
+        },
+        {
+          "userId": 1,
+          "email": "karolina.siodlo@gmail.com",
+          "firstName": "Karolina",
+          "lastName": "Siodłowska",
+          "password": "$2b$10$fMEje8daczRJC/qPI8S84OtmoZaiTJvnq8QMr67a0i3SzWPDnoaAu",
+          "meta": {
+            "revision": 0,
+            "created": 1738533037802,
+            "version": 0
+          },
+          "$loki": 29
+        },
+        {
+          "email": "kanabaj.amelia@gmail.com",
+          "password": "$2b$10$x0zFz.VP6hSmtxq1yas35ObVEX9SoogO9sTStpEV61jSzkh81hguW",
+          "firstName": "Amelia",
+          "lastName": "Kanabaj",
+          "userId": 1738533406195,
+          "role": "user",
+          "meta": {
+            "revision": 0,
+            "created": 1738533406196,
+            "version": 0
+          },
+          "$loki": 30
         }
       ],
       "idIndex": null,
@@ -165,7 +95,7 @@
       "serializableIndices": true,
       "disableFreeze": true,
       "ttl": null,
-      "maxId": 11,
+      "maxId": 30,
       "DynamicViews": [],
       "events": {
         "insert": [],
@@ -345,7 +275,7 @@
     "recursiveWait": true,
     "recursiveWaitLimit": false,
     "recursiveWaitLimitDuration": 2000,
-    "started": 1738506660043
+    "started": 1738533380809
   },
   "persistenceMethod": "fs",
   "persistenceAdapter": null,
