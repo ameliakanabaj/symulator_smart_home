@@ -306,6 +306,44 @@ app.delete('/devices/:userId/:id', (req, res) => {
   res.json(removedDevice);
 });
 
+const users = [];
+
+  app.post('/api/register', async (req, res) => {
+    const { email, password, firstName, lastName, confirmPassword } = req.body;
+
+    if (password !== confirmPassword) {
+        return res.status(400).send('Passwords do not match.');
+    }
+
+    if (usersCollection.findOne({ email })) {
+        return res.status(400).send('There already exists an account linked to that email.');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const userId = Date.now(); 
+    
+    const newUser = usersCollection.insert({
+        email,
+        password: hashedPassword,
+        firstName,
+        lastName,
+        userId,
+    });
+
+    db.saveDatabase(); 
+
+    res.status(201).send({
+        message: 'Successfully registered',
+        user: {
+            email: newUser.email,
+            firstName: newUser.firstName,
+            lastName: newUser.lastName,
+            userId: newUser.userId, 
+        }
+    });
+});
+
 function ensureUsersCollection() {
     if (!usersCollection) {
         usersCollection = db.getCollection('users') || db.addCollection('users');

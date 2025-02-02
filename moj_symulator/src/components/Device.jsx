@@ -160,9 +160,9 @@ export default function Device() {
                 <>
                     <p>Brightness: {device.brightness}</p>
                     <input
-                        type="number"
+                        type="range"
                         value={device.brightness ?? 50}
-                        min="1"
+                        min="0"
                         max="100"
                         onChange={(e) => handleChange('brightness', e.target.value)}
                     />
@@ -176,8 +176,10 @@ export default function Device() {
                 <>
                     <p>Temperature: {device.temperature}°C</p>
                     <input
-                        type="number"
+                        type="range"
                         value={device.temperature ?? 21}
+                        min="10"
+                        max="35"
                         onChange={(e) => handleChange('temperature', e.target.value)}
                     />
                     <button onClick={toggleStatus}>
@@ -190,9 +192,9 @@ export default function Device() {
                 <>
                     <p>Volume: {device.volume}</p>
                     <input
-                        type="number"
+                        type="range"
                         value={device.volume ?? 50}
-                        min="1"
+                        min="0"
                         max="100"
                         onChange={(e) => handleChange('volume', e.target.value)}
                     />
@@ -206,9 +208,9 @@ export default function Device() {
                 <>
                     <p>Voulume: {device.volume}</p>
                     <input
-                        type="number"
+                        type="range"
                         value={device.volume ?? 50}
-                        min="1"
+                        min="0"
                         max="100"
                         onChange={(e) => handleChange('volume', e.target.value)}
                     />
@@ -228,7 +230,7 @@ export default function Device() {
                 <>
                     <p>Speed: {device.speed}</p>
                     <input
-                        type="number"
+                        type="range"
                         value={device.speed ?? 1}
                         min="1"
                         max="3"
@@ -263,7 +265,6 @@ export default function Device() {
             <button  className='save' onClick={handleDeleteSchedule} disabled={!schedule.timeOn && !schedule.timeOff}>
                 Delete Schedule
             </button>
-
         </div>
     );
 }

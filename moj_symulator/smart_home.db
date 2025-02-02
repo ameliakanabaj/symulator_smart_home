@@ -115,6 +115,32 @@
             "version": 0
           },
           "$loki": 9
+        },
+        {
+          "email": "a@kk",
+          "password": "$2b$10$L0PEMDAiM5lp4dkN0XIqtuPIfkib7OhSNgM/9lKwBmD0hUbC8HLNy",
+          "firstName": "1",
+          "lastName": "1",
+          "userId": 1738506663798,
+          "meta": {
+            "revision": 0,
+            "created": 1738506663798,
+            "version": 0
+          },
+          "$loki": 10
+        },
+        {
+          "email": "admin@smarthome.com",
+          "password": "$2b$10$6.kuQdI2zHdbCPEi/mfGs.VuZukrlWdyyeRfPGNFBwjNz1Paq.8da",
+          "firstName": "1",
+          "lastName": "11",
+          "userId": 1738506693097,
+          "meta": {
+            "revision": 0,
+            "created": 1738506693097,
+            "version": 0
+          },
+          "$loki": 11
         }
       ],
       "idIndex": null,
@@ -139,7 +165,7 @@
       "serializableIndices": true,
       "disableFreeze": true,
       "ttl": null,
-      "maxId": 9,
+      "maxId": 11,
       "DynamicViews": [],
       "events": {
         "insert": [],
@@ -319,7 +345,7 @@
     "recursiveWait": true,
     "recursiveWaitLimit": false,
     "recursiveWaitLimitDuration": 2000,
-    "started": 1738504896381
+    "started": 1738506660043
   },
   "persistenceMethod": "fs",
   "persistenceAdapter": null,
