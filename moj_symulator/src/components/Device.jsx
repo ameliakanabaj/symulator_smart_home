@@ -10,6 +10,7 @@ export default function Device() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [ws, setWs] = useState(null);  
+    const [reportContent, setReportContent] = useState(""); 
     const [deviceError, setDeviceError] = useState(null); 
 
     useEffect(() => {
@@ -126,6 +127,29 @@ export default function Device() {
 
     const handleSave = () => {
         updateDevice({ ...device, userId });
+    };
+
+    const handleReportSubmit = () => {
+        if (!reportContent) {
+            alert("Report content cannot be empty");
+            return;
+        }
+
+        fetch(`https://localhost:3000/reports`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: reportContent, deviceId: id, userId }),
+        })
+        .then((response) => response.json())
+        .then(() => {
+            alert("Report submitted successfully");
+            setReportContent("");
+        })
+        .catch(() => {
+            alert("Failed to submit report");
+        });
     };
 
     const handleSaveSchedule = () => {
@@ -282,6 +306,16 @@ export default function Device() {
             <button  className='save' onClick={handleDeleteSchedule} disabled={!schedule.timeOn && !schedule.timeOff}>
                 Delete Schedule
             </button>
+
+            <div className='report'>
+                <h2>Submit Report</h2>
+                <textarea
+                    value={reportContent}
+                    onChange={(e) => setReportContent(e.target.value)}
+                    placeholder='Enter your report here...'
+                />
+                <button onClick={handleReportSubmit}>Submit Report</button>
+            </div>
         </div>
     );
 }

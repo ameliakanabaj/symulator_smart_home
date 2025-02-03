@@ -258,6 +258,80 @@
       },
       "changes": [],
       "dirtyIds": []
+    },
+    {
+      "name": "reports",
+      "data": [
+        {
+          "id": "1738581939475",
+          "content": "The device is not connecting to the app",
+          "deviceId": "1",
+          "userId": "1738533406195",
+          "meta": {
+            "revision": 0,
+            "created": 1738581939475,
+            "version": 0
+          },
+          "$loki": 2
+        },
+        {
+          "id": "1738583005170",
+          "content": "hej!",
+          "deviceId": "1",
+          "userId": "1738533406195",
+          "meta": {
+            "revision": 1,
+            "created": 1738583005170,
+            "version": 0,
+            "updated": 1738583036305
+          },
+          "$loki": 4
+        }
+      ],
+      "idIndex": [
+        2,
+        4
+      ],
+      "binaryIndices": {},
+      "constraints": null,
+      "uniqueNames": [],
+      "transforms": {},
+      "objType": "reports",
+      "dirty": false,
+      "cachedIndex": null,
+      "cachedBinaryIndex": null,
+      "cachedData": null,
+      "adaptiveBinaryIndices": true,
+      "transactional": false,
+      "cloneObjects": false,
+      "cloneMethod": "parse-stringify",
+      "asyncListeners": false,
+      "disableMeta": false,
+      "disableChangesApi": true,
+      "disableDeltaChangesApi": true,
+      "autoupdate": false,
+      "serializableIndices": true,
+      "disableFreeze": true,
+      "ttl": null,
+      "maxId": 4,
+      "DynamicViews": [],
+      "events": {
+        "insert": [],
+        "update": [],
+        "pre-insert": [],
+        "pre-update": [],
+        "close": [],
+        "flushbuffer": [],
+        "error": [],
+        "delete": [
+          null
+        ],
+        "warning": [
+          null
+        ]
+      },
+      "changes": [],
+      "dirtyIds": []
     }
   ],
   "databaseVersion": 1.5,
@@ -275,7 +349,7 @@
     "recursiveWait": true,
     "recursiveWaitLimit": false,
     "recursiveWaitLimitDuration": 2000,
-    "started": 1738533380809
+    "started": 1738582976835
   },
   "persistenceMethod": "fs",
   "persistenceAdapter": null,

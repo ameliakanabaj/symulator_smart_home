@@ -10,6 +10,8 @@ export default function AdminPanel() {
     const [users, setUsers] = useState([]);
     const [newUser, setNewUser] = useState({ userId: '', email: '', firstName: '', lastName: '' });
     const [editUser, setEditUser] = useState(null);
+    const [reports, setReports] = useState([]);
+    const [editReport, setEditReport] = useState(null);
     const [error, setError] = useState("");
 
     const fetchAdmins = async () => {
@@ -24,6 +26,20 @@ export default function AdminPanel() {
             }
         } catch (error) {
             console.log('Error during fetching admins:', error);
+        }
+    };
+
+    const fetchReports = async () => {
+        try {
+            const response = await fetch('https://localhost:3000/reports');
+            const data = await response.json();
+            if (response.ok) {
+                setReports(data);
+            } else {
+                console.log('Failed to fetch reports');
+            }
+        } catch (error) {
+            console.log('Error during fetching reports:', error);
         }
     };
 
@@ -176,11 +192,43 @@ export default function AdminPanel() {
             console.log('Error while editing user:', error);
         }
     };
+
+    const handleDeleteReport = async (id) => {
+        try {
+            const response = await fetch(`https://localhost:3000/reports/${id}`, { method: 'DELETE' });
+            if (response.ok) {
+                setReports((prevReports) => prevReports.filter((report) => report.id !== id));
+            }
+        } catch (error) {
+            console.log('Error while deleting report:', error);
+        }
+    };
+
+    const handleEditReport = async () => {
+        try {
+            const response = await fetch(`https://localhost:3000/reports/${editReport.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: editReport.content }),
+            });
+            if (response.ok) {
+                setReports((prevReports) =>
+                    prevReports.map((report) =>
+                        report.id === editReport.id ? { ...report, content: editReport.content } : report
+                    )
+                );
+                setEditReport(null);
+            }
+        } catch (error) {
+            console.log('Error while editing report:', error);
+        }
+    };
     
 
     useEffect(() => {
         fetchAdmins();
         fetchUsers();
+        fetchReports();
     }, []);
 
     return (
@@ -299,6 +347,31 @@ export default function AdminPanel() {
                     </form>
                 )}
 
+            </div>
+
+            <div className='reports'>
+                <h2>Reports</h2>
+                {editReport && (
+                    <div>
+                        <textarea
+                            value={editReport.content}
+                            onChange={(e) => setEditReport({ ...editReport, content: e.target.value })}
+                        />
+                        <button onClick={handleEditReport}>Save</button>
+                        <button onClick={() => setEditReport(null)}>Cancel</button>
+                    </div>
+                )}
+                <ul>
+                    {reports.map((report) => (
+                        <li key={report.id}>
+                            <b>User ID:</b> <div className='report'>{report.userId}</div>
+                            <b>Device ID:</b> <div className='report'>{report.id}</div>
+                            <b>Report message:</b> <div className='report'>{report.content}</div>
+                            <button onClick={() => handleDeleteReport(report.id)}>Delete</button>
+                            <button onClick={() => setEditReport(report)}>Edit</button>
+                        </li>
+                    ))}
+                </ul>
             </div>
         </div>
     );

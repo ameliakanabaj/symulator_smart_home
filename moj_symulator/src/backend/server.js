@@ -30,14 +30,14 @@ const db = new Loki('smart_home.db', {
     autoloadCallback: () => {
         usersCollection = db.getCollection('users') || db.addCollection('users');
         devicesCollection = db.getCollection('devices') || db.addCollection('devices');
-    
+        reportsCollection = db.getCollection('reports') || db.addCollection('reports'); // Dodana kolekcja raportów
     },
     autosave: true,
     autosaveInterval: 4000,
     serializationMethod: "pretty"
 });
 
-let usersCollection, devicesCollection;
+let usersCollection, devicesCollection, reportsCollection;
 
 function ensureCollections() {
     if (!usersCollection || !devicesCollection) {
@@ -565,7 +565,44 @@ app.delete('/api/users/:id', (req, res) => {
     res.json({ message: 'User deleted successfully', user });
 });
 
+app.get('/reports', (req, res) => {
+    res.json(reportsCollection.find());
+});
 
+app.post('/reports', (req, res) => {
+    const { content, deviceId, userId } = req.body;
+    if (!content || !deviceId || !userId) {
+        return res.status(400).json({ error: 'All fields (content, deviceId, userId) are required' });
+    }
+    const newReport = { id: Date.now().toString(), content, deviceId, userId };
+    reportsCollection.insert(newReport);
+    db.saveDatabase();
+    res.status(201).json(newReport);
+});
+
+app.put('/reports/:id', (req, res) => {
+    const { content, deviceId, userId } = req.body;
+    const report = reportsCollection.findOne({ id: req.params.id });
+    if (!report) {
+        return res.status(404).json({ error: 'Report not found' });
+    }
+    report.content = content || report.content;
+    report.deviceId = deviceId || report.deviceId;
+    report.userId = userId || report.userId;
+    reportsCollection.update(report);
+    db.saveDatabase();
+    res.json(report);
+});
+
+app.delete('/reports/:id', (req, res) => {
+    const report = reportsCollection.findOne({ id: req.params.id });
+    if (!report) {
+        return res.status(404).json({ error: 'Report not found' });
+    }
+    reportsCollection.remove(report);
+    db.saveDatabase();
+    res.json({ message: 'Report deleted successfully' });
+});
 
 app.post('/set-last-device', (req, res) => {
     const { device } = req.body;  
