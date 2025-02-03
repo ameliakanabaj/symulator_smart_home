@@ -283,6 +283,14 @@ export default function Device() {
                 </>
             )}
 
+            {device.type === 'others' && (
+                <>
+                    <button onClick={toggleStatus}>
+                        {device.status === 'on' ? 'Turn Off' : 'Turn On'}
+                    </button>
+                </>
+            )}
+
             <button onClick={handleSave}>Save changes</button>
 
             <h2>Schedule</h2>

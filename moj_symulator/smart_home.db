@@ -71,6 +71,20 @@
             "version": 0
           },
           "$loki": 30
+        },
+        {
+          "email": "andrzej.kotowski@gmail.com",
+          "password": "$2b$10$Z9UiL6REjBqi4ytx1gFMJ.MppbV4ErVThEVlHn5kfX6lJM9TiN93a",
+          "firstName": "Andrzej",
+          "lastName": "Kotowski",
+          "userId": 1738583631275,
+          "role": "user",
+          "meta": {
+            "revision": 0,
+            "created": 1738583631275,
+            "version": 0
+          },
+          "$loki": 31
         }
       ],
       "idIndex": null,
@@ -95,7 +109,7 @@
       "serializableIndices": true,
       "disableFreeze": true,
       "ttl": null,
-      "maxId": 30,
+      "maxId": 31,
       "DynamicViews": [],
       "events": {
         "insert": [],
@@ -288,10 +302,7 @@
           "$loki": 4
         }
       ],
-      "idIndex": [
-        2,
-        4
-      ],
+      "idIndex": null,
       "binaryIndices": {},
       "constraints": null,
       "uniqueNames": [],
@@ -349,7 +360,7 @@
     "recursiveWait": true,
     "recursiveWaitLimit": false,
     "recursiveWaitLimitDuration": 2000,
-    "started": 1738582976835
+    "started": 1738583554487
   },
   "persistenceMethod": "fs",
   "persistenceAdapter": null,
