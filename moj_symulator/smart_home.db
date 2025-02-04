@@ -85,6 +85,33 @@
             "version": 0
           },
           "$loki": 31
+        },
+        {
+          "email": "paulik@gmail.com",
+          "password": "$2b$10$4uLdwQ27k3EKdkTrmyk61e9fNT53J.JUt47MqT/wPlKVhz15nBDIK",
+          "firstName": "Paulik",
+          "lastName": "Krajnik",
+          "userId": 1738584841533,
+          "role": "user",
+          "meta": {
+            "revision": 0,
+            "created": 1738584841533,
+            "version": 0
+          },
+          "$loki": 32
+        },
+        {
+          "userId": 100,
+          "email": "czarek04@wp.pl",
+          "firstName": "Franek",
+          "lastName": "Frania",
+          "password": "$2b$10$DRazTNd5CVfG6stH8yhz7OtURWPVPeXRpGHtGNCOPGLZ36pjyiaJu",
+          "meta": {
+            "revision": 0,
+            "created": 1738585155952,
+            "version": 0
+          },
+          "$loki": 33
         }
       ],
       "idIndex": null,
@@ -109,7 +136,7 @@
       "serializableIndices": true,
       "disableFreeze": true,
       "ttl": null,
-      "maxId": 31,
+      "maxId": 33,
       "DynamicViews": [],
       "events": {
         "insert": [],
@@ -300,9 +327,26 @@
             "updated": 1738583036305
           },
           "$loki": 4
+        },
+        {
+          "id": "1738584988309",
+          "content": "English test",
+          "deviceId": "1",
+          "userId": "1738584841533",
+          "meta": {
+            "revision": 1,
+            "created": 1738584988309,
+            "version": 0,
+            "updated": 1738585236807
+          },
+          "$loki": 5
         }
       ],
-      "idIndex": null,
+      "idIndex": [
+        2,
+        4,
+        5
+      ],
       "binaryIndices": {},
       "constraints": null,
       "uniqueNames": [],
@@ -324,7 +368,7 @@
       "serializableIndices": true,
       "disableFreeze": true,
       "ttl": null,
-      "maxId": 4,
+      "maxId": 5,
       "DynamicViews": [],
       "events": {
         "insert": [],
@@ -360,7 +404,7 @@
     "recursiveWait": true,
     "recursiveWaitLimit": false,
     "recursiveWaitLimitDuration": 2000,
-    "started": 1738583554487
+    "started": 1738584631162
   },
   "persistenceMethod": "fs",
   "persistenceAdapter": null,
