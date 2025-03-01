@@ -112,6 +112,34 @@
             "version": 0
           },
           "$loki": 33
+        },
+        {
+          "email": "amelka1234@onet.pl",
+          "password": "$2b$10$tqTZlQjMCGx9XqEX0Bcuk.Fa6xXKg08p6U86Qp2Myuwk3Puz2YEq6",
+          "firstName": "Amelka",
+          "lastName": "Kos",
+          "userId": 1738792052159,
+          "role": "user",
+          "meta": {
+            "revision": 0,
+            "created": 1738792052159,
+            "version": 0
+          },
+          "$loki": 34
+        },
+        {
+          "email": "psw@gmail.com",
+          "password": "$2b$10$DWGVENEGCmxzOXeWUxSWs.203Pbll4WCS6USiz9M/wAFJWZ.XCy0i",
+          "firstName": "PSW",
+          "lastName": "PSW",
+          "userId": 1738835240166,
+          "role": "user",
+          "meta": {
+            "revision": 0,
+            "created": 1738835240166,
+            "version": 0
+          },
+          "$loki": 35
         }
       ],
       "idIndex": null,
@@ -136,7 +164,7 @@
       "serializableIndices": true,
       "disableFreeze": true,
       "ttl": null,
-      "maxId": 33,
+      "maxId": 35,
       "DynamicViews": [],
       "events": {
         "insert": [],
@@ -316,36 +344,34 @@
           "$loki": 2
         },
         {
-          "id": "1738583005170",
-          "content": "hej!",
+          "id": "1738793092232",
+          "content": "Problem z urządzeniem, proszę o pomoc.",
           "deviceId": "1",
-          "userId": "1738533406195",
+          "userId": "1738792052159",
           "meta": {
-            "revision": 1,
-            "created": 1738583005170,
-            "version": 0,
-            "updated": 1738583036305
+            "revision": 0,
+            "created": 1738793092232,
+            "version": 0
           },
-          "$loki": 4
+          "$loki": 6
         },
         {
-          "id": "1738584988309",
-          "content": "English test",
+          "id": "1738835305510",
+          "content": "Problem",
           "deviceId": "1",
-          "userId": "1738584841533",
+          "userId": "1738835240166",
           "meta": {
-            "revision": 1,
-            "created": 1738584988309,
-            "version": 0,
-            "updated": 1738585236807
+            "revision": 0,
+            "created": 1738835305510,
+            "version": 0
           },
-          "$loki": 5
+          "$loki": 7
         }
       ],
       "idIndex": [
         2,
-        4,
-        5
+        6,
+        7
       ],
       "binaryIndices": {},
       "constraints": null,
@@ -368,7 +394,7 @@
       "serializableIndices": true,
       "disableFreeze": true,
       "ttl": null,
-      "maxId": 5,
+      "maxId": 7,
       "DynamicViews": [],
       "events": {
         "insert": [],
@@ -404,7 +430,7 @@
     "recursiveWait": true,
     "recursiveWaitLimit": false,
     "recursiveWaitLimitDuration": 2000,
-    "started": 1738584631162
+    "started": 1738832054200
   },
   "persistenceMethod": "fs",
   "persistenceAdapter": null,

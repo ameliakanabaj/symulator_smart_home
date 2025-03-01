@@ -30,7 +30,7 @@ const db = new Loki('smart_home.db', {
     autoloadCallback: () => {
         usersCollection = db.getCollection('users') || db.addCollection('users');
         devicesCollection = db.getCollection('devices') || db.addCollection('devices');
-        reportsCollection = db.getCollection('reports') || db.addCollection('reports'); // Dodana kolekcja raportów
+        reportsCollection = db.getCollection('reports') || db.addCollection('reports'); 
     },
     autosave: true,
     autosaveInterval: 4000,
@@ -95,12 +95,12 @@ wss.on('connection', (ws) => {
 });
 
 function sendDeviceStatusUpdate(deviceId, status) {
-    logger.info(`Próba wysłania statusu ${status} dla urządzenia ${deviceId}`);//debug
+    logger.info(`Próba wysłania statusu ${status} dla urządzenia ${deviceId}`);
 
     clients.forEach(client => {
         if (parseInt(client.deviceId) === parseInt(deviceId) && client.ws.readyState === WebSocket.OPEN) {
             client.ws.send(JSON.stringify({ deviceId, status }));
-            logger.info(`Wysłano status ${status} do urządzenia ${deviceId}`);//debug
+            logger.info(`Wysłano status ${status} do urządzenia ${deviceId}`);
         }
     });
 }
